@@ -1,0 +1,21 @@
+{
+	"name": "DailyLogProcessingTrigger",
+	"properties": {
+		"annotations": [
+			"DailyLogTrigger"
+		],
+		"runtimeState": "Stopped",
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Minute",
+			"interval": 60,
+			"startTime": "2019-08-13T09:44:00.000Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}
