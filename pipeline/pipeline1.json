@@ -30,7 +30,20 @@
 							"fileExtension": ".csv"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "customerID"
+								},
+								"sink": {
+									"name": ""
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
