@@ -1,0 +1,47 @@
+{
+	"name": "ds_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureBlob",
+		"typeProperties": {
+			"format": {
+				"type": "JsonFormat",
+				"filePattern": "arrayOfObjects",
+				"jsonPathDefinition": {
+					"customerID": "$.['customerID']",
+					"status": "$.['status']",
+					"deleted": "$.['deleted']",
+					"marketViaEmail": "$.['marketViaEmail']",
+					"marketViaMail": "$.['marketViaMail']",
+					"doNotRentEmail": "$.['doNotRentEmail']",
+					"doNotRentMail": "$.['doNotRentMail']",
+					"firstVisit": "$.['firstVisit']",
+					"lastVisit": "$.['lastVisit']",
+					"group": "$.['group']",
+					"prefix": "$.['prefix']",
+					"firstName": "$.['firstName']",
+					"lastName": "$.['lastName']",
+					"gender": "$.['gender']",
+					"birthMonth": "$.['birthMonth']",
+					"birthDay": "$.['birthDay']",
+					"address": "$.['address']",
+					"city": "$.['city']",
+					"state": "$.['state']",
+					"postalCode": "$.['postalCode']",
+					"country": "$.['country']",
+					"email": "$.['email']",
+					"workphone": "$.['workphone']",
+					"homephone": "$.['homephone']",
+					"mobilephone": "$.['mobilephone']",
+					"extCustomerId": "$.['extCustomerId']"
+				}
+			},
+			"fileName": "Customer.json",
+			"folderPath": "publicrestapi/sample"
+		}
+	}
+}
