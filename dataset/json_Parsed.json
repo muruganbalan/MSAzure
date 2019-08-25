@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "Parsed_Customer",
 				"folderPath": "sample",
 				"container": "publicrestapi"
 			},
@@ -18,11 +19,6 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "Aaruyire;A.R Rahman;Guru;;2007;Others;310;4.75 MB;3/31/2019 12:24:20 PM;G:\\Songs\\A.R Rahman\\;Aaruyire.mp3;A.R Rahman",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }

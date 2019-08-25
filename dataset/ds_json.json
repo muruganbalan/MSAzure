@@ -7,6 +7,112 @@
 		},
 		"annotations": [],
 		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "customerID",
+				"type": "Int64"
+			},
+			{
+				"name": "status",
+				"type": "Boolean"
+			},
+			{
+				"name": "deleted",
+				"type": "Boolean"
+			},
+			{
+				"name": "marketViaEmail",
+				"type": "Boolean"
+			},
+			{
+				"name": "marketViaMail",
+				"type": "Boolean"
+			},
+			{
+				"name": "doNotRentEmail",
+				"type": "Boolean"
+			},
+			{
+				"name": "doNotRentMail",
+				"type": "Boolean"
+			},
+			{
+				"name": "firstVisit",
+				"type": "String"
+			},
+			{
+				"name": "lastVisit",
+				"type": "String"
+			},
+			{
+				"name": "group",
+				"type": "String"
+			},
+			{
+				"name": "prefix",
+				"type": "String"
+			},
+			{
+				"name": "firstName",
+				"type": "String"
+			},
+			{
+				"name": "lastName",
+				"type": "String"
+			},
+			{
+				"name": "gender",
+				"type": "String"
+			},
+			{
+				"name": "birthMonth",
+				"type": "String"
+			},
+			{
+				"name": "birthDay",
+				"type": "String"
+			},
+			{
+				"name": "address",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			},
+			{
+				"name": "state",
+				"type": "String"
+			},
+			{
+				"name": "postalCode",
+				"type": "String"
+			},
+			{
+				"name": "country",
+				"type": "String"
+			},
+			{
+				"name": "email",
+				"type": "String"
+			},
+			{
+				"name": "workphone",
+				"type": "String"
+			},
+			{
+				"name": "homephone",
+				"type": "String"
+			},
+			{
+				"name": "mobilephone",
+				"type": "String"
+			},
+			{
+				"name": "extCustomerId",
+				"type": "String"
+			}
+		],
 		"typeProperties": {
 			"format": {
 				"type": "JsonFormat",
