@@ -1,0 +1,713 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "azdevazuredatafactory"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"ds_json_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Customer.json"
+		},
+		"ds_json_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "publicrestapi/sample"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DailyLogProcessingTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [
+					"DailyLogTrigger"
+				],
+				"runtimeState": "Stopped",
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 60,
+					"startTime": "2019-08-13T09:44:00.000Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WeeklyTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2019-08-13T09:48:00.000Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "TumblingWindowTriggerDependencyReference",
+							"referenceTrigger": {
+								"referenceName": "DailyLogProcessingTrigger",
+								"type": "TriggerReference"
+							}
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/triggers/DailyLogProcessingTrigger')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "customerID",
+						"type": "Int64"
+					},
+					{
+						"name": "status",
+						"type": "Boolean"
+					},
+					{
+						"name": "deleted",
+						"type": "Boolean"
+					},
+					{
+						"name": "marketViaEmail",
+						"type": "Boolean"
+					},
+					{
+						"name": "marketViaMail",
+						"type": "Boolean"
+					},
+					{
+						"name": "doNotRentEmail",
+						"type": "Boolean"
+					},
+					{
+						"name": "doNotRentMail",
+						"type": "Boolean"
+					},
+					{
+						"name": "firstVisit",
+						"type": "String"
+					},
+					{
+						"name": "lastVisit",
+						"type": "String"
+					},
+					{
+						"name": "group",
+						"type": "String"
+					},
+					{
+						"name": "prefix",
+						"type": "String"
+					},
+					{
+						"name": "firstName",
+						"type": "String"
+					},
+					{
+						"name": "lastName",
+						"type": "String"
+					},
+					{
+						"name": "gender",
+						"type": "String"
+					},
+					{
+						"name": "birthMonth",
+						"type": "String"
+					},
+					{
+						"name": "birthDay",
+						"type": "String"
+					},
+					{
+						"name": "address",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "state",
+						"type": "String"
+					},
+					{
+						"name": "postalCode",
+						"type": "String"
+					},
+					{
+						"name": "country",
+						"type": "String"
+					},
+					{
+						"name": "email",
+						"type": "String"
+					},
+					{
+						"name": "workphone",
+						"type": "String"
+					},
+					{
+						"name": "homephone",
+						"type": "String"
+					},
+					{
+						"name": "mobilephone",
+						"type": "String"
+					},
+					{
+						"name": "extCustomerId",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "JsonFormat",
+						"filePattern": "arrayOfObjects",
+						"jsonPathDefinition": {
+							"customerID": "$.['customerID']",
+							"status": "$.['status']",
+							"deleted": "$.['deleted']",
+							"marketViaEmail": "$.['marketViaEmail']",
+							"marketViaMail": "$.['marketViaMail']",
+							"doNotRentEmail": "$.['doNotRentEmail']",
+							"doNotRentMail": "$.['doNotRentMail']",
+							"firstVisit": "$.['firstVisit']",
+							"lastVisit": "$.['lastVisit']",
+							"group": "$.['group']",
+							"prefix": "$.['prefix']",
+							"firstName": "$.['firstName']",
+							"lastName": "$.['lastName']",
+							"gender": "$.['gender']",
+							"birthMonth": "$.['birthMonth']",
+							"birthDay": "$.['birthDay']",
+							"address": "$.['address']",
+							"city": "$.['city']",
+							"state": "$.['state']",
+							"postalCode": "$.['postalCode']",
+							"country": "$.['country']",
+							"email": "$.['email']",
+							"workphone": "$.['workphone']",
+							"homephone": "$.['homephone']",
+							"mobilephone": "$.['mobilephone']",
+							"extCustomerId": "$.['extCustomerId']"
+						}
+					},
+					"fileName": "[parameters('ds_json_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('ds_json_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/json_Parsed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Customer.csv",
+						"folderPath": "sample",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "customerID",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "deleted",
+						"type": "String"
+					},
+					{
+						"name": "marketViaEmail",
+						"type": "String"
+					},
+					{
+						"name": "marketViaMail",
+						"type": "String"
+					},
+					{
+						"name": "doNotRentEmail",
+						"type": "String"
+					},
+					{
+						"name": "doNotRentMail",
+						"type": "String"
+					},
+					{
+						"name": "firstVisit",
+						"type": "String"
+					},
+					{
+						"name": "lastVisit",
+						"type": "String"
+					},
+					{
+						"name": "group",
+						"type": "String"
+					},
+					{
+						"name": "prefix",
+						"type": "String"
+					},
+					{
+						"name": "firstName",
+						"type": "String"
+					},
+					{
+						"name": "lastName",
+						"type": "String"
+					},
+					{
+						"name": "gender",
+						"type": "String"
+					},
+					{
+						"name": "birthMonth",
+						"type": "String"
+					},
+					{
+						"name": "birthDay",
+						"type": "String"
+					},
+					{
+						"name": "address",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "state",
+						"type": "String"
+					},
+					{
+						"name": "postalCode",
+						"type": "String"
+					},
+					{
+						"name": "country",
+						"type": "String"
+					},
+					{
+						"name": "email",
+						"type": "String"
+					},
+					{
+						"name": "workphone",
+						"type": "String"
+					},
+					{
+						"name": "homephone",
+						"type": "String"
+					},
+					{
+						"name": "mobilephone",
+						"type": "String"
+					},
+					{
+						"name": "extCustomerId",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copyBlobData",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "customerID",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "customerID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "status",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "deleted",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "deleted",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "marketViaEmail",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "marketViaEmail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "marketViaMail",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "marketViaMail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "doNotRentEmail",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "doNotRentEmail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "doNotRentMail",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "doNotRentMail",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "firstVisit",
+											"type": "String"
+										},
+										"sink": {
+											"name": "firstVisit",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "lastVisit",
+											"type": "String"
+										},
+										"sink": {
+											"name": "lastVisit",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "group",
+											"type": "String"
+										},
+										"sink": {
+											"name": "group",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "prefix",
+											"type": "String"
+										},
+										"sink": {
+											"name": "prefix",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "firstName",
+											"type": "String"
+										},
+										"sink": {
+											"name": "firstName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "lastName",
+											"type": "String"
+										},
+										"sink": {
+											"name": "lastName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "birthMonth",
+											"type": "String"
+										},
+										"sink": {
+											"name": "birthMonth",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "birthDay",
+											"type": "String"
+										},
+										"sink": {
+											"name": "birthDay",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "address",
+											"type": "String"
+										},
+										"sink": {
+											"name": "address",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "city",
+											"type": "String"
+										},
+										"sink": {
+											"name": "city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "state",
+											"type": "String"
+										},
+										"sink": {
+											"name": "state",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "postalCode",
+											"type": "String"
+										},
+										"sink": {
+											"name": "postalCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "country",
+											"type": "String"
+										},
+										"sink": {
+											"name": "country",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "email",
+											"type": "String"
+										},
+										"sink": {
+											"name": "email",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "workphone",
+											"type": "String"
+										},
+										"sink": {
+											"name": "workphone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "homephone",
+											"type": "String"
+										},
+										"sink": {
+											"name": "homephone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "mobilephone",
+											"type": "String"
+										},
+										"sink": {
+											"name": "mobilephone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "extCustomerId",
+											"type": "String"
+										},
+										"sink": {
+											"name": "extCustomerId",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_json",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "json_Parsed",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_json')]",
+				"[concat(variables('factoryId'), '/datasets/json_Parsed')]"
+			]
+		}
+	]
+}
