@@ -1,0 +1,17 @@
+{
+	"name": "DS_ABLB",
+	"properties": {
+		"description": "Source Data Set to Access it from Azure Blob Storage.",
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_TRANSACTIONS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureBlob",
+		"typeProperties": {
+			"format": {
+				"type": "JsonFormat"
+			}
+		}
+	}
+}
