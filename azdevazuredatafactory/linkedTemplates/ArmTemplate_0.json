@@ -985,38 +985,7 @@
 									},
 									{
 										"source": {
-											"name": "appointments",
-											"type": "String"
-										},
-										"sink": {
-											"name": "appointments",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "tenders",
-											"type": "String"
-										},
-										"sink": {
-											"name": "tenders",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "lines",
-											"type": "String"
-										},
-										"sink": {
-											"name": "lines",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "transaction_line_id",
-											"type": "Int64"
+											"name": "transaction_line_id"
 										},
 										"sink": {
 											"name": "transaction_line_id",
@@ -1025,8 +994,7 @@
 									},
 									{
 										"source": {
-											"name": "provider_id",
-											"type": "Int64"
+											"name": "provider_id"
 										},
 										"sink": {
 											"name": "provider_id",
@@ -1065,8 +1033,7 @@
 									},
 									{
 										"source": {
-											"name": "product_class",
-											"type": "String"
+											"name": "product_class"
 										},
 										"sink": {
 											"name": "produt_class",
