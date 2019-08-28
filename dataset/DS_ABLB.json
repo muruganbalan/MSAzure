@@ -22,7 +22,16 @@
 					"currency": "$.['currency']",
 					"appointments": "$.['appointments']",
 					"tenders": "$.['tenders']",
-					"lines": "$.['lines']"
+					"lines": "$.['lines']",
+					"transaction_line_id": "['transaction_line_id']",
+					"provider_id": "['provider_id']",
+					"provider_name": "['provider_name']",
+					"type": "['type']",
+					"sku": "['sku']",
+					"product_class": "['product_class']",
+					"product_subclass": "['product_subclass']",
+					"description": "['description']",
+					"sold_price": "['sold_price']"
 				}
 			},
 			"fileName": "Transaction.json",
