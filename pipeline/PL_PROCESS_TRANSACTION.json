@@ -36,8 +36,183 @@
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"source": {
+									"name": "transaction_id",
+									"type": "Int64"
+								},
 								"sink": {
-									"name": ""
+									"name": "transaction_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "location_id",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "location_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "transaction_type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "transaction_type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "customer_id",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "customer_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "currency",
+									"type": "String"
+								},
+								"sink": {
+									"name": "currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "appointments",
+									"type": "String"
+								},
+								"sink": {
+									"name": "appointments",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "tenders",
+									"type": "String"
+								},
+								"sink": {
+									"name": "tenders",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "lines",
+									"type": "String"
+								},
+								"sink": {
+									"name": "lines",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "transaction_line_id",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "transaction_line_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "provider_id",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "provider_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "provider_name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "provider_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "sku",
+									"type": "String"
+								},
+								"sink": {
+									"name": "sku",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "product_class",
+									"type": "String"
+								},
+								"sink": {
+									"name": "produt_class",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "product_subclass",
+									"type": "String"
+								},
+								"sink": {
+									"name": "product_subclass",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "description",
+									"type": "String"
+								},
+								"sink": {
+									"name": "description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "sold_price",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "sold_price",
+									"type": "String"
 								}
 							}
 						]
