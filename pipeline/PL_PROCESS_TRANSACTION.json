@@ -201,7 +201,14 @@
 			{
 				"name": "ACT_ADB_CLEANSING",
 				"type": "DatabricksNotebook",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "ACT_COPYFROM_BLOB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -210,6 +217,9 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/681790@cognizant.com/Transactions"
+				},
 				"linkedServiceName": {
 					"referenceName": "LS_ADB_CON",
 					"type": "LinkedServiceReference"
