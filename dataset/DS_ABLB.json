@@ -12,6 +12,7 @@
 			"format": {
 				"type": "JsonFormat",
 				"filePattern": "arrayOfObjects",
+				"jsonNodeReference": "$.['lines']",
 				"jsonPathDefinition": {
 					"transaction_id": "$.['transaction_id']",
 					"location_id": "$.['location_id']",
