@@ -11,11 +11,23 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
+		"LS_ABLB_TRANSACTIONS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_TRANSACTIONS'"
+		},
 		"ds_json_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Customer.json"
 		},
 		"ds_json_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "publicrestapi/sample"
+		},
+		"DS_ABLB_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Transaction.json"
+		},
+		"DS_ABLB_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
 		},
@@ -49,11 +61,20 @@
 					"AzureBlobStorage1_connectionString": {
 						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
+					"LS_ABLB_TRANSACTIONS_connectionString": {
+						"value": "[parameters('LS_ABLB_TRANSACTIONS_connectionString')]"
+					},
 					"ds_json_properties_typeProperties_fileName": {
 						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
 					},
 					"ds_json_properties_typeProperties_folderPath": {
 						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
+					},
+					"DS_ABLB_properties_typeProperties_fileName": {
+						"value": "[parameters('DS_ABLB_properties_typeProperties_fileName')]"
+					},
+					"DS_ABLB_properties_typeProperties_folderPath": {
+						"value": "[parameters('DS_ABLB_properties_typeProperties_folderPath')]"
 					}
 				}
 			},

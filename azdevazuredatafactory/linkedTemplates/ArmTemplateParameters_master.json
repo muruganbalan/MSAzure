@@ -8,10 +8,19 @@
 		"AzureBlobStorage1_connectionString": {
 			"value": ""
 		},
+		"LS_ABLB_TRANSACTIONS_connectionString": {
+			"value": ""
+		},
 		"ds_json_properties_typeProperties_fileName": {
 			"value": "Customer.json"
 		},
 		"ds_json_properties_typeProperties_folderPath": {
+			"value": "publicrestapi/sample"
+		},
+		"DS_ABLB_properties_typeProperties_fileName": {
+			"value": "Transaction.json"
+		},
+		"DS_ABLB_properties_typeProperties_folderPath": {
 			"value": "publicrestapi/sample"
 		},
 		"containerUri": {
