@@ -1,0 +1,7 @@
+{
+	"name": "PL_PROCESS_TRANSACTION",
+	"properties": {
+		"description": "This pipeline is for extracting Nested JSON data from Azure Blob Storage for Data Cleansing.",
+		"annotations": []
+	}
+}
