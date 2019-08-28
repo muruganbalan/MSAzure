@@ -11,6 +11,9 @@
 		"LS_ABLB_TRANSACTIONS_connectionString": {
 			"value": ""
 		},
+		"LS_ADB_CON_accessToken": {
+			"value": ""
+		},
 		"ds_json_properties_typeProperties_fileName": {
 			"value": "Customer.json"
 		},

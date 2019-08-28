@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_TRANSACTIONS'"
 		},
+		"LS_ADB_CON_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'LS_ADB_CON'"
+		},
 		"ds_json_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Customer.json"
@@ -63,6 +67,9 @@
 					},
 					"LS_ABLB_TRANSACTIONS_connectionString": {
 						"value": "[parameters('LS_ABLB_TRANSACTIONS_connectionString')]"
+					},
+					"LS_ADB_CON_accessToken": {
+						"value": "[parameters('LS_ADB_CON_accessToken')]"
 					},
 					"ds_json_properties_typeProperties_fileName": {
 						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
