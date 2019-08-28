@@ -1,0 +1,128 @@
+{
+	"name": "DS_CSV_TRANSACTION",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_TRANSACTIONS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "sample",
+				"container": "publicrestapi"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "customerID",
+				"type": "String"
+			},
+			{
+				"name": "status",
+				"type": "String"
+			},
+			{
+				"name": "deleted",
+				"type": "String"
+			},
+			{
+				"name": "marketViaEmail",
+				"type": "String"
+			},
+			{
+				"name": "marketViaMail",
+				"type": "String"
+			},
+			{
+				"name": "doNotRentEmail",
+				"type": "String"
+			},
+			{
+				"name": "doNotRentMail",
+				"type": "String"
+			},
+			{
+				"name": "firstVisit",
+				"type": "String"
+			},
+			{
+				"name": "lastVisit",
+				"type": "String"
+			},
+			{
+				"name": "group",
+				"type": "String"
+			},
+			{
+				"name": "prefix",
+				"type": "String"
+			},
+			{
+				"name": "firstName",
+				"type": "String"
+			},
+			{
+				"name": "lastName",
+				"type": "String"
+			},
+			{
+				"name": "gender",
+				"type": "String"
+			},
+			{
+				"name": "birthMonth",
+				"type": "String"
+			},
+			{
+				"name": "birthDay",
+				"type": "String"
+			},
+			{
+				"name": "address",
+				"type": "String"
+			},
+			{
+				"name": "city",
+				"type": "String"
+			},
+			{
+				"name": "state",
+				"type": "String"
+			},
+			{
+				"name": "postalCode",
+				"type": "String"
+			},
+			{
+				"name": "country",
+				"type": "String"
+			},
+			{
+				"name": "email",
+				"type": "String"
+			},
+			{
+				"name": "workphone",
+				"type": "String"
+			},
+			{
+				"name": "homephone",
+				"type": "String"
+			},
+			{
+				"name": "mobilephone",
+				"type": "String"
+			},
+			{
+				"name": "extCustomerId",
+				"type": "String"
+			}
+		]
+	}
+}
