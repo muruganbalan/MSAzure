@@ -10,8 +10,22 @@
 		"type": "AzureBlob",
 		"typeProperties": {
 			"format": {
-				"type": "JsonFormat"
-			}
+				"type": "JsonFormat",
+				"filePattern": "arrayOfObjects",
+				"jsonPathDefinition": {
+					"transaction_id": "$.['transaction_id']",
+					"location_id": "$.['location_id']",
+					"transaction_type": "$.['transaction_type']",
+					"customer_id": "$.['customer_id']",
+					"date": "$.['date']",
+					"currency": "$.['currency']",
+					"appointments": "$.['appointments']",
+					"tenders": "$.['tenders']",
+					"lines": "$.['lines']"
+				}
+			},
+			"fileName": "Transaction.json",
+			"folderPath": "publicrestapi/sample"
 		}
 	}
 }
