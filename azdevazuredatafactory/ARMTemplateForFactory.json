@@ -404,13 +404,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/PL_CUSTOMER_JSON_TO_CSV')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "copyBlobData",
+						"name": "ACT_COPY_FROM_BLOB",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
