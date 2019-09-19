@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "PL_CUSTOMER_JSON_TO_CSV",
 	"properties": {
 		"activities": [
 			{
