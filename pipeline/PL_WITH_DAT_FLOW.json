@@ -1,0 +1,7 @@
+{
+	"name": "PL_WITH_DAT_FLOW",
+	"properties": {
+		"description": "THIS PIPELINE IS TO DEMONSTRATE ON HOW WE CAN USE ADF MAPPING DATA FLOW WITHIN A PIPELINE",
+		"annotations": []
+	}
+}
