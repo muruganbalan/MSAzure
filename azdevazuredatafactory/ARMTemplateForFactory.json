@@ -19,13 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'LS_ADB_CON'"
 		},
-		"ds_json_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "Customer.json"
+		"LS_ASQL_SRC_OLTP_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_SRC_OLTP'"
 		},
-		"ds_json_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "publicrestapi/sample"
+		"LS_ASQL_TGT_OLAP_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_TGT_OLAP'"
 		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
@@ -34,12 +34,375 @@
 		"DS_ABLB_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
+		},
+		"ds_json_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Customer.json"
+		},
+		"ds_json_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "publicrestapi/sample"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/COPY_PIPELINE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS COPY ACTIVITY IS FOR COPYING A TABLE FROM ONE SQL SERVER DATABASE TO THE OTHER DATABASE.",
+				"activities": [
+					{
+						"name": "CPY_WIZARD",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "SalesLT.CustomerAddress"
+							},
+							{
+								"name": "Destination",
+								"value": "dbo.CustomerAddress"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource"
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "CustomerID",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "CustomerID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "AddressID",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "AddressID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "AddressType",
+											"type": "String"
+										},
+										"sink": {
+											"name": "AddressType",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "rowguid",
+											"type": "Guid"
+										},
+										"sink": {
+											"name": "rowguid",
+											"type": "Guid"
+										}
+									},
+									{
+										"source": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_89m",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_89m",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_89m')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_89m')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_PROCESS_TRANSACTION')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This pipeline is for extracting Nested JSON data from Azure Blob Storage for Data Cleansing.",
+				"activities": [
+					{
+						"name": "ACT_COPYFROM_BLOB",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BlobSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "transaction_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "transaction_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "location_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "location_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "transaction_type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "transaction_type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "customer_id",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "customer_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "date",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "currency",
+											"type": "String"
+										},
+										"sink": {
+											"name": "currency",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "transaction_line_id"
+										},
+										"sink": {
+											"name": "transaction_line_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "provider_id"
+										},
+										"sink": {
+											"name": "provider_id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "provider_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "provider_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "type",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sku",
+											"type": "String"
+										},
+										"sink": {
+											"name": "sku",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "product_class"
+										},
+										"sink": {
+											"name": "produt_class",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "product_subclass",
+											"type": "String"
+										},
+										"sink": {
+											"name": "product_subclass",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "description",
+											"type": "String"
+										},
+										"sink": {
+											"name": "description",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sold_price",
+											"type": "Double"
+										},
+										"sink": {
+											"name": "sold_price",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_ABLB",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_CSV_TRANSACTION",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "ACT_ADB_CLEANSING",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "ACT_COPYFROM_BLOB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/681790@cognizant.com/Transactions"
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB')]",
+				"[concat(variables('factoryId'), '/datasets/DS_CSV_TRANSACTION')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -365,6 +728,259 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Source Data Set to Access it from Azure Blob Storage.",
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "transaction_id",
+						"type": "Int64"
+					},
+					{
+						"name": "location_id",
+						"type": "Int64"
+					},
+					{
+						"name": "transaction_type",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "Int64"
+					},
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "appointments",
+						"type": "String"
+					},
+					{
+						"name": "tenders",
+						"type": "String"
+					},
+					{
+						"name": "lines",
+						"type": "String"
+					},
+					{
+						"name": "transaction_line_id",
+						"type": "Int64"
+					},
+					{
+						"name": "provider_id",
+						"type": "Int64"
+					},
+					{
+						"name": "provider_name",
+						"type": "String"
+					},
+					{
+						"name": "type",
+						"type": "String"
+					},
+					{
+						"name": "sku",
+						"type": "String"
+					},
+					{
+						"name": "product_class",
+						"type": "String"
+					},
+					{
+						"name": "product_subclass",
+						"type": "String"
+					},
+					{
+						"name": "description",
+						"type": "String"
+					},
+					{
+						"name": "sold_price",
+						"type": "Double"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "JsonFormat",
+						"filePattern": "arrayOfObjects",
+						"jsonNodeReference": "$.['lines']",
+						"jsonPathDefinition": {
+							"transaction_id": "$.['transaction_id']",
+							"location_id": "$.['location_id']",
+							"transaction_type": "$.['transaction_type']",
+							"customer_id": "$.['customer_id']",
+							"date": "$.['date']",
+							"currency": "$.['currency']",
+							"appointments": "$.['appointments']",
+							"tenders": "$.['tenders']",
+							"lines": "$.['lines']",
+							"transaction_line_id": "[['transaction_line_id']",
+							"provider_id": "[['provider_id']",
+							"provider_name": "[['provider_name']",
+							"type": "[['type']",
+							"sku": "[['sku']",
+							"product_class": "[['product_class']",
+							"product_subclass": "[['product_subclass']",
+							"description": "[['description']",
+							"sold_price": "[['sold_price']"
+						}
+					},
+					"fileName": "[parameters('DS_ABLB_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('DS_ABLB_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_CSV_TRANSACTION')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Transactions.csv",
+						"folderPath": "sample",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_89m')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_TGT_OLAP",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "AddressID",
+						"type": "int",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "AddressType",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CustomerAddress"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_89m')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_SRC_OLTP",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10,
+						"scale": 255
+					},
+					{
+						"name": "AddressID",
+						"type": "int",
+						"precision": 10,
+						"scale": 255
+					},
+					{
+						"name": "AddressType",
+						"type": "nvarchar",
+						"precision": 255,
+						"scale": 255
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier",
+						"precision": 255,
+						"scale": 255
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "CustomerAddress"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_SRC_OLTP')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -670,6 +1286,65 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABLB_TRANSACTIONS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked Service for connecting to azure blob storage to get transaction json data",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ABLB_TRANSACTIONS_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADB_CON')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked Service for connecting to Azure Databricks",
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://centralus.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADB_CON_accessToken')]"
+					},
+					"existingClusterId": "0812-105814-earls760"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ASQL_SRC_OLTP')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ASQL_SRC_OLTP_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ASQL_TGT_OLAP')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ASQL_TGT_OLAP_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DailyLogProcessingTrigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -724,428 +1399,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/triggers/DailyLogProcessingTrigger')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_PROCESS_TRANSACTION')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is for extracting Nested JSON data from Azure Blob Storage for Data Cleansing.",
-				"activities": [
-					{
-						"name": "ACT_COPYFROM_BLOB",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "BlobSource",
-								"recursive": true
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".csv"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "transaction_id",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "transaction_id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "location_id",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "location_id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "transaction_type",
-											"type": "String"
-										},
-										"sink": {
-											"name": "transaction_type",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "customer_id",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "customer_id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "date",
-											"type": "String"
-										},
-										"sink": {
-											"name": "date",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "currency",
-											"type": "String"
-										},
-										"sink": {
-											"name": "currency",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "transaction_line_id"
-										},
-										"sink": {
-											"name": "transaction_line_id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "provider_id"
-										},
-										"sink": {
-											"name": "provider_id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "provider_name",
-											"type": "String"
-										},
-										"sink": {
-											"name": "provider_name",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "type",
-											"type": "String"
-										},
-										"sink": {
-											"name": "type",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "sku",
-											"type": "String"
-										},
-										"sink": {
-											"name": "sku",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "product_class"
-										},
-										"sink": {
-											"name": "produt_class",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "product_subclass",
-											"type": "String"
-										},
-										"sink": {
-											"name": "product_subclass",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "description",
-											"type": "String"
-										},
-										"sink": {
-											"name": "description",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "sold_price",
-											"type": "Double"
-										},
-										"sink": {
-											"name": "sold_price",
-											"type": "String"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_ABLB",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_CSV_TRANSACTION",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "ACT_ADB_CLEANSING",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
-							{
-								"activity": "ACT_COPYFROM_BLOB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/681790@cognizant.com/Transactions"
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_ADB_CON",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB')]",
-				"[concat(variables('factoryId'), '/datasets/DS_CSV_TRANSACTION')]",
-				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ABLB')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Source Data Set to Access it from Azure Blob Storage.",
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_TRANSACTIONS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureBlob",
-				"structure": [
-					{
-						"name": "transaction_id",
-						"type": "Int64"
-					},
-					{
-						"name": "location_id",
-						"type": "Int64"
-					},
-					{
-						"name": "transaction_type",
-						"type": "String"
-					},
-					{
-						"name": "customer_id",
-						"type": "Int64"
-					},
-					{
-						"name": "date",
-						"type": "String"
-					},
-					{
-						"name": "currency",
-						"type": "String"
-					},
-					{
-						"name": "appointments",
-						"type": "String"
-					},
-					{
-						"name": "tenders",
-						"type": "String"
-					},
-					{
-						"name": "lines",
-						"type": "String"
-					},
-					{
-						"name": "transaction_line_id",
-						"type": "Int64"
-					},
-					{
-						"name": "provider_id",
-						"type": "Int64"
-					},
-					{
-						"name": "provider_name",
-						"type": "String"
-					},
-					{
-						"name": "type",
-						"type": "String"
-					},
-					{
-						"name": "sku",
-						"type": "String"
-					},
-					{
-						"name": "product_class",
-						"type": "String"
-					},
-					{
-						"name": "product_subclass",
-						"type": "String"
-					},
-					{
-						"name": "description",
-						"type": "String"
-					},
-					{
-						"name": "sold_price",
-						"type": "Double"
-					}
-				],
-				"typeProperties": {
-					"format": {
-						"type": "JsonFormat",
-						"filePattern": "arrayOfObjects",
-						"jsonNodeReference": "$.['lines']",
-						"jsonPathDefinition": {
-							"transaction_id": "$.['transaction_id']",
-							"location_id": "$.['location_id']",
-							"transaction_type": "$.['transaction_type']",
-							"customer_id": "$.['customer_id']",
-							"date": "$.['date']",
-							"currency": "$.['currency']",
-							"appointments": "$.['appointments']",
-							"tenders": "$.['tenders']",
-							"lines": "$.['lines']",
-							"transaction_line_id": "[['transaction_line_id']",
-							"provider_id": "[['provider_id']",
-							"provider_name": "[['provider_name']",
-							"type": "[['type']",
-							"sku": "[['sku']",
-							"product_class": "[['product_class']",
-							"product_subclass": "[['product_subclass']",
-							"description": "[['description']",
-							"sold_price": "[['sold_price']"
-						}
-					},
-					"fileName": "[parameters('DS_ABLB_properties_typeProperties_fileName')]",
-					"folderPath": "[parameters('DS_ABLB_properties_typeProperties_folderPath')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ABLB_TRANSACTIONS')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Linked Service for connecting to azure blob storage to get transaction json data",
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ABLB_TRANSACTIONS_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_CSV_TRANSACTION')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_TRANSACTIONS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Transactions.csv",
-						"folderPath": "sample",
-						"container": "publicrestapi"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ADB_CON')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Linked Service for connecting to Azure Databricks",
-				"annotations": [],
-				"type": "AzureDatabricks",
-				"typeProperties": {
-					"domain": "https://centralus.azuredatabricks.net",
-					"accessToken": {
-						"type": "SecureString",
-						"value": "[parameters('LS_ADB_CON_accessToken')]"
-					},
-					"existingClusterId": "0812-105814-earls760"
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }

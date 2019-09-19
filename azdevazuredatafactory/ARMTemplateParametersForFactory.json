@@ -14,16 +14,22 @@
 		"LS_ADB_CON_accessToken": {
 			"value": ""
 		},
-		"ds_json_properties_typeProperties_fileName": {
-			"value": "Customer.json"
+		"LS_ASQL_SRC_OLTP_connectionString": {
+			"value": ""
 		},
-		"ds_json_properties_typeProperties_folderPath": {
-			"value": "publicrestapi/sample"
+		"LS_ASQL_TGT_OLAP_connectionString": {
+			"value": ""
 		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"value": "Transaction.json"
 		},
 		"DS_ABLB_properties_typeProperties_folderPath": {
+			"value": "publicrestapi/sample"
+		},
+		"ds_json_properties_typeProperties_fileName": {
+			"value": "Customer.json"
+		},
+		"ds_json_properties_typeProperties_folderPath": {
 			"value": "publicrestapi/sample"
 		}
 	}

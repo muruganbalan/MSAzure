@@ -19,19 +19,27 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'LS_ADB_CON'"
 		},
-		"ds_json_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "Customer.json"
+		"LS_ASQL_SRC_OLTP_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_SRC_OLTP'"
 		},
-		"ds_json_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "publicrestapi/sample"
+		"LS_ASQL_TGT_OLAP_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_TGT_OLAP'"
 		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
 		},
 		"DS_ABLB_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "publicrestapi/sample"
+		},
+		"ds_json_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Customer.json"
+		},
+		"ds_json_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
 		},
@@ -71,17 +79,23 @@
 					"LS_ADB_CON_accessToken": {
 						"value": "[parameters('LS_ADB_CON_accessToken')]"
 					},
-					"ds_json_properties_typeProperties_fileName": {
-						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
+					"LS_ASQL_SRC_OLTP_connectionString": {
+						"value": "[parameters('LS_ASQL_SRC_OLTP_connectionString')]"
 					},
-					"ds_json_properties_typeProperties_folderPath": {
-						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
+					"LS_ASQL_TGT_OLAP_connectionString": {
+						"value": "[parameters('LS_ASQL_TGT_OLAP_connectionString')]"
 					},
 					"DS_ABLB_properties_typeProperties_fileName": {
 						"value": "[parameters('DS_ABLB_properties_typeProperties_fileName')]"
 					},
 					"DS_ABLB_properties_typeProperties_folderPath": {
 						"value": "[parameters('DS_ABLB_properties_typeProperties_folderPath')]"
+					},
+					"ds_json_properties_typeProperties_fileName": {
+						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
+					},
+					"ds_json_properties_typeProperties_folderPath": {
+						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
 					}
 				}
 			},
