@@ -294,7 +294,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DestinationDataset_89m')]",
+			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_OLAP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -346,7 +346,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SourceDataset_89m')]",
+			"name": "[concat(parameters('factoryName'), '/DS_ASQL_SRC_OLTP')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -815,14 +815,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "SourceDataset_89m",
+								"referenceName": "DS_ASQL_SRC_OLTP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DestinationDataset_89m",
+								"referenceName": "DS_ASQL_TGT_OLAP",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -832,8 +832,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SourceDataset_89m')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_89m')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SRC_OLTP')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_OLAP')]"
 			]
 		},
 		{
