@@ -1,5 +1,5 @@
 {
-	"name": "DS_ASQL_CUSTOMER",
+	"name": "DS_ASQL_SRC_CUSTOMER",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ASQL_SRC_OLTP",
