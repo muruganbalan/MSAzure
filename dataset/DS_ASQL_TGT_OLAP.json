@@ -1,5 +1,5 @@
 {
-	"name": "DestinationDataset_89m",
+	"name": "DS_ASQL_TGT_OLAP",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ASQL_TGT_OLAP",
