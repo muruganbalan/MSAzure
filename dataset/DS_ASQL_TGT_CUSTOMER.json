@@ -1,0 +1,96 @@
+{
+	"name": "DS_ASQL_TGT_CUSTOMER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_TGT_OLAP",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NameStyle",
+				"type": "text"
+			},
+			{
+				"name": "Title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FirstName",
+				"type": "text"
+			},
+			{
+				"name": "MiddleName",
+				"type": "text"
+			},
+			{
+				"name": "LastName",
+				"type": "text"
+			},
+			{
+				"name": "Suffix",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CompanyName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SalesPerson",
+				"type": "nvarchar"
+			},
+			{
+				"name": "EmailAddress",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Phone",
+				"type": "text"
+			},
+			{
+				"name": "PasswordHash",
+				"type": "varchar"
+			},
+			{
+				"name": "PasswordSalt",
+				"type": "varchar"
+			},
+			{
+				"name": "rowguid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "ModifiedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "InsertedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "UpdatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "HashKey",
+				"type": "text"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "dim_customer"
+		}
+	}
+}
