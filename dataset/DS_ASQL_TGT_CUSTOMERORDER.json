@@ -1,0 +1,32 @@
+{
+	"name": "DS_ASQL_TGT_CUSTOMERORDER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_TGT_OLAP",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NumberOfOrders",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TotalAmount",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "CustomerOrders"
+		}
+	}
+}
