@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_ASQL_CUSTOMER",
+						"referenceName": "DS_ASQL_SRC_CUSTOMER",
 						"type": "DatasetReference"
 					},
 					"name": "Customer"
