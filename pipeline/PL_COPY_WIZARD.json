@@ -1,5 +1,5 @@
 {
-	"name": "COPY_PIPELINE",
+	"name": "PL_COPY_WIZARD",
 	"properties": {
 		"description": "THIS COPY ACTIVITY IS FOR COPYING A TABLE FROM ONE SQL SERVER DATABASE TO THE OTHER DATABASE.",
 		"activities": [
