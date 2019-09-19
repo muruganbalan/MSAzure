@@ -1,0 +1,12 @@
+{
+	"name": "DF_SCD_TYP1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"script": "\n"
+		}
+	}
+}
