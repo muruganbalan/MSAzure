@@ -90,13 +90,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SourceDataset_89m",
+						"referenceName": "DS_ASQL_SRC_OLTP",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DestinationDataset_89m",
+						"referenceName": "DS_ASQL_TGT_OLAP",
 						"type": "DatasetReference"
 					}
 				]
