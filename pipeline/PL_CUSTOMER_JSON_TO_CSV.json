@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copyBlobData",
+				"name": "ACT_COPY_FROM_BLOB",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
