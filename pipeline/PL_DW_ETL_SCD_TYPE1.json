@@ -1,0 +1,28 @@
+{
+	"name": "PL_DW_ETL_SCD_TYPE1",
+	"properties": {
+		"description": "THIS PIPELINE IS TO DEMONSTRATE SCD TYPE 1 USING MAPPING DATA FLOW.",
+		"activities": [
+			{
+				"name": "DF_SCD_TYP1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SCD_TYP1",
+						"type": "DataFlowReference"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
