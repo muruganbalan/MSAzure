@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_CUSTOMER_ORDER",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
