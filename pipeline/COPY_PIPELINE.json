@@ -1,0 +1,107 @@
+{
+	"name": "COPY_PIPELINE",
+	"properties": {
+		"description": "THIS COPY ACTIVITY IS FOR COPYING A TABLE FROM ONE SQL SERVER DATABASE TO THE OTHER DATABASE.",
+		"activities": [
+			{
+				"name": "Copy_89m",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "SalesLT.CustomerAddress"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.CustomerAddress"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CustomerID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "CustomerID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "AddressID",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "AddressID",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "AddressType",
+									"type": "String"
+								},
+								"sink": {
+									"name": "AddressType",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "rowguid",
+									"type": "Guid"
+								},
+								"sink": {
+									"name": "rowguid",
+									"type": "Guid"
+								}
+							},
+							{
+								"source": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_89m",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_89m",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

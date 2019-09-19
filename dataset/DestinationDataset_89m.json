@@ -1,0 +1,47 @@
+{
+	"name": "DestinationDataset_89m",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_TGT_OLAP",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerID",
+				"type": "int",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "AddressID",
+				"type": "int",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "AddressType",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "rowguid",
+				"type": "uniqueidentifier",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "ModifiedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "CustomerAddress"
+		}
+	}
+}
