@@ -2,6 +2,27 @@
 	"name": "PL_WITH_DAT_FLOW",
 	"properties": {
 		"description": "THIS PIPELINE IS TO DEMONSTRATE ON HOW WE CAN USE ADF MAPPING DATA FLOW WITHIN A PIPELINE",
+		"activities": [
+			{
+				"name": "DF_CUSTOMER_ORDER",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_CUSTOMER_ORDER",
+						"type": "DataFlowReference"
+					}
+				}
+			}
+		],
 		"annotations": []
 	}
 }
