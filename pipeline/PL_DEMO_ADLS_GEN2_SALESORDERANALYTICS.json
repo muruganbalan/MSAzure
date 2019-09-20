@@ -2,6 +2,30 @@
 	"name": "PL_DEMO_ADLS_GEN2_SALESORDERANALYTICS",
 	"properties": {
 		"description": "THIS PIPELINE IS TO DEMONSTRATE USING AZURE DATALAKE GEN2 (ADLS GEN2) WITH MAPPING DATAFLOW COMPONENT IN ADF.",
+		"activities": [
+			{
+				"name": "DF_SALESORDERANALYTICS",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SALESORDERANALYTICS",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Year": "2016"
+						}
+					}
+				}
+			}
+		],
 		"annotations": []
 	}
 }
