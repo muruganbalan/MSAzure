@@ -2270,8 +2270,8 @@
 					}
 				],
 				"typeProperties": {
-					"schema": "HumanResources",
-					"table": "Employee"
+					"schema": "dbo",
+					"table": "Employee1"
 				}
 			},
 			"dependsOn": [
