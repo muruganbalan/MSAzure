@@ -1,0 +1,7 @@
+{
+	"name": "PL_SHIR_ONPREM_COPY",
+	"properties": {
+		"description": "THIS PIPELINE IS FOR CONNECTING TO THE ONPREM SQL SERVER WITH SELF HOSTED INTERGRATION RUNTIME (SHIR) OPTION.",
+		"annotations": []
+	}
+}
