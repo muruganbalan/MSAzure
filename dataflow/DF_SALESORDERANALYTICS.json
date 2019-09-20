@@ -18,7 +18,7 @@
 					"name": "GetRequiredColumns"
 				}
 			],
-			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['DataLakeCleansing/raw/sales/\\'+$Year+\\'/**/*.txt']) ~> SalesOrderSource\nSalesOrderSource select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredColumns"
+			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tdateFormats: ['yyyy-MM-dd'],\n\ttimestampFormats: ['MM-dd-yyyy HH:mm:ss'],\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal',\n\twildcardPaths:['DataLakeCleansing/raw/sales/\\'+$Year+\\'/**/*.txt']) ~> SalesOrderSource\nSalesOrderSource select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredColumns"
 		}
 	}
 }
