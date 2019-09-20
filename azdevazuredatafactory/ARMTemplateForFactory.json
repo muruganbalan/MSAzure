@@ -2432,24 +2432,6 @@
 									},
 									{
 										"source": {
-											"name": "OrganizationNode"
-										},
-										"sink": {
-											"name": "OrganizationNode"
-										}
-									},
-									{
-										"source": {
-											"name": "OrganizationLevel",
-											"type": "Int16"
-										},
-										"sink": {
-											"name": "OrganizationLevel",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
 											"name": "JobTitle",
 											"type": "String"
 										},
@@ -2536,16 +2518,6 @@
 										"sink": {
 											"name": "CurrentFlag",
 											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "rowguid",
-											"type": "Guid"
-										},
-										"sink": {
-											"name": "rowguid",
-											"type": "Guid"
 										}
 									},
 									{
