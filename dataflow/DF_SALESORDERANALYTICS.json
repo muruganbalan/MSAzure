@@ -3,22 +3,10 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [
-				{
-					"dataset": {
-						"referenceName": "SalesData",
-						"type": "DatasetReference"
-					},
-					"name": "SalesOrderSource"
-				}
-			],
+			"sources": [],
 			"sinks": [],
-			"transformations": [
-				{
-					"name": "GetRequiredColumns"
-				}
-			],
-			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal') ~> SalesOrderSource\nSalesOrderSource select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredColumns"
+			"transformations": [],
+			"script": "\nparameters{\n\tYear as integer (2016)\n}"
 		}
 	}
 }
