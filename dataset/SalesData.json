@@ -10,6 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "01.txt",
+				"folderPath": "DataLakeCleansing/raw/sales/2016/01",
 				"fileSystem": "datalake"
 			},
 			"columnDelimiter": "\t",
