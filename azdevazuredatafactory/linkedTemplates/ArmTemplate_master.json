@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_TGT_OLAP'"
 		},
+		"LS_ONPREMSQL_SOURCE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -128,6 +132,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"LS_ONPREMSQL_SOURCE_connectionString": {
+						"value": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
 					}
 				}
 			},

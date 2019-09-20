@@ -23,6 +23,9 @@
 		"LS_ASQL_TGT_OLAP_connectionString": {
 			"value": ""
 		},
+		"LS_ONPREMSQL_SOURCE_connectionString": {
+			"value": ""
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"value": "Transaction.json"
 		},
