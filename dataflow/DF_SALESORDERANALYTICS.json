@@ -12,7 +12,15 @@
 					"name": "SalesOrderSource"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SalesData",
+						"type": "DatasetReference"
+					},
+					"name": "RankMonthSink"
+				}
+			],
 			"transformations": [
 				{
 					"name": "GetRequiredData"
@@ -27,7 +35,7 @@
 					"name": "RankByMonth"
 				}
 			],
-			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1) ~> SalesOrderSource\nSalesOrderSource select(mapColumn(\n\t\tSalesOrderID,\n\t\tSalesOrderDetailID,\n\t\tOrderQty,\n\t\tProductID,\n\t\tUnitPrice,\n\t\tUnitPriceDiscount,\n\t\tLineTotal,\n\t\tModifiedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredData\nGetRequiredData derive(OrderedDate_Month = month(ModifiedDate),\n\t\tOrderedDate_Year = year(ModifiedDate)) ~> DeriveMonthYear\nDeriveMonthYear aggregate(groupBy(OrderedDate_Month,\n\t\tOrderedDate_Year,\n\t\t{} = ERROR_FUNCTION('')),\n\tTotal = sum((UnitPrice)*(OrderQty))) ~> TotalAggregate\nTotalAggregate window(over(OrderedDate_Month),\n\tdesc(Total, false),\n\tRanking = denseRank(Total)) ~> RankByMonth"
+			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1) ~> SalesOrderSource\nSalesOrderSource select(mapColumn(\n\t\tSalesOrderID,\n\t\tSalesOrderDetailID,\n\t\tOrderQty,\n\t\tProductID,\n\t\tUnitPrice,\n\t\tUnitPriceDiscount,\n\t\tLineTotal,\n\t\tModifiedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredData\nGetRequiredData derive(OrderedDate_Month = month(ModifiedDate),\n\t\tOrderedDate_Year = year(ModifiedDate)) ~> DeriveMonthYear\nDeriveMonthYear aggregate(groupBy(OrderedDate_Month,\n\t\tOrderedDate_Year,\n\t\t{} = ERROR_FUNCTION('')),\n\tTotal = sum((UnitPrice)*(OrderQty))) ~> TotalAggregate\nTotalAggregate window(over(OrderedDate_Month),\n\tdesc(Total, false),\n\tRanking = denseRank(Total)) ~> RankByMonth\nRankByMonth sink(input(\n\t\tSalesOrderID as string,\n\t\tSalesOrderDetailID as string,\n\t\tOrderQty as string,\n\t\tProductID as string,\n\t\tUnitPrice as string,\n\t\tUnitPriceDiscount as string,\n\t\tLineTotal as string,\n\t\trowguid as string,\n\t\tModifiedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Rank_by_Month.txt'],\n\tpartitionBy('hash', 1)) ~> RankMonthSink"
 		}
 	}
 }
