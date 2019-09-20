@@ -1,0 +1,17 @@
+{
+	"name": "LS_ONPREMSQL_SOURCE",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "This linked service is for connecting to the on-premise SQL server database with Self Hosted Integration RunTime.",
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=HOME-PC;initial catalog=AdventureWorks2012;user id=sa",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjYmQ3YTViNC02MmVkLTQ3ZjMtYjZlNS1jNzg3ZmRhMDlmYmEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "OnPremIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
