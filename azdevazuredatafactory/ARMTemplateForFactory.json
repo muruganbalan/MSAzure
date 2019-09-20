@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'LS_ADB_CON'"
 		},
+		"LS_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS'"
+		},
 		"LS_ASQL_SRC_OLTP_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_SRC_OLTP'"
@@ -42,6 +46,10 @@
 		"ds_json_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azdevadls.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -485,6 +493,47 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_json')]",
 				"[concat(variables('factoryId'), '/datasets/json_Parsed')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_DEMO_ADLS_GEN2_SALESORDERANALYTICS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS TO DEMONSTRATE USING AZURE DATALAKE GEN2 (ADLS GEN2) WITH MAPPING DATAFLOW COMPONENT IN ADF.",
+				"activities": [
+					{
+						"name": "DF_SALESORDERANALYTICS",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_SALESORDERANALYTICS",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Year": "2016"
+								},
+								"datasetParameters": {
+									"SalesOrderSource": {},
+									"RankMonthSink": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DF_SALESORDERANALYTICS')]"
 			]
 		},
 		{
@@ -1416,6 +1465,100 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Rank_by_Month')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DataLakeCleansing/raw/sales/2016/01",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SalesData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "01.txt",
+						"folderPath": "DataLakeCleansing/raw/sales/2016/01",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": "\t",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SalesOrderID",
+						"type": "String"
+					},
+					{
+						"name": "SalesOrderDetailID",
+						"type": "String"
+					},
+					{
+						"name": "OrderQty",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "UnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "UnitPriceDiscount",
+						"type": "String"
+					},
+					{
+						"name": "LineTotal",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1754,6 +1897,23 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LS_ASQL_SRC_OLTP')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1884,6 +2044,54 @@
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_CUSTOMERORDER')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SRC_CUSTOMER')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SALESHEADER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_SALESORDERANALYTICS')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SalesData",
+								"type": "DatasetReference"
+							},
+							"name": "SalesOrderSource",
+							"typeProperties": {}
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Rank_by_Month",
+								"type": "DatasetReference"
+							},
+							"name": "RankMonthSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "GetRequiredData"
+						},
+						{
+							"name": "DeriveMonthYear"
+						},
+						{
+							"name": "TotalAggregate"
+						},
+						{
+							"name": "RankByMonth"
+						}
+					],
+					"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1) ~> SalesOrderSource\nSalesOrderSource select(mapColumn(\n\t\tSalesOrderID,\n\t\tSalesOrderDetailID,\n\t\tOrderQty,\n\t\tProductID,\n\t\tUnitPrice,\n\t\tUnitPriceDiscount,\n\t\tLineTotal,\n\t\tModifiedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredData\nGetRequiredData derive(OrderedDate_Month = month(ModifiedDate),\n\t\tOrderedDate_Year = year(ModifiedDate)) ~> DeriveMonthYear\nDeriveMonthYear aggregate(groupBy(OrderedDate_Month,\n\t\tOrderedDate_Year),\n\tTotal = sum((UnitPrice)*(OrderQty))) ~> TotalAggregate\nTotalAggregate window(over(OrderedDate_Month),\n\tdesc(Total, false),\n\tRanking = denseRank(Total)) ~> RankByMonth\nRankByMonth sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Rank_by_Month.txt'],\n\tpartitionBy('hash', 1)) ~> RankMonthSink"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Rank_by_Month')]",
+				"[concat(variables('factoryId'), '/datasets/SalesData')]"
 			]
 		},
 		{

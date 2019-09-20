@@ -14,6 +14,9 @@
 		"LS_ADB_CON_accessToken": {
 			"value": ""
 		},
+		"LS_ADLS_accountKey": {
+			"value": ""
+		},
 		"LS_ASQL_SRC_OLTP_connectionString": {
 			"value": ""
 		},
@@ -31,6 +34,9 @@
 		},
 		"ds_json_properties_typeProperties_folderPath": {
 			"value": "publicrestapi/sample"
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"value": "https://azdevadls.dfs.core.windows.net"
 		}
 	}
 }

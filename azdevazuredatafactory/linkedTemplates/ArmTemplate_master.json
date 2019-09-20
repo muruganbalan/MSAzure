@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'LS_ADB_CON'"
 		},
+		"LS_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS'"
+		},
 		"LS_ASQL_SRC_OLTP_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_SRC_OLTP'"
@@ -42,6 +46,10 @@
 		"ds_json_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azdevadls.dfs.core.windows.net"
 		},
 		"containerUri": {
 			"type": "string",
@@ -79,11 +87,17 @@
 					"LS_ADB_CON_accessToken": {
 						"value": "[parameters('LS_ADB_CON_accessToken')]"
 					},
+					"LS_ADLS_accountKey": {
+						"value": "[parameters('LS_ADLS_accountKey')]"
+					},
 					"LS_ASQL_SRC_OLTP_connectionString": {
 						"value": "[parameters('LS_ASQL_SRC_OLTP_connectionString')]"
 					},
 					"LS_ASQL_TGT_OLAP_connectionString": {
 						"value": "[parameters('LS_ASQL_TGT_OLAP_connectionString')]"
+					},
+					"LS_ADLS_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_properties_typeProperties_url')]"
 					},
 					"DS_ABLB_properties_typeProperties_fileName": {
 						"value": "[parameters('DS_ABLB_properties_typeProperties_fileName')]"
