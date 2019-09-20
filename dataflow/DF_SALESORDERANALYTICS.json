@@ -3,10 +3,18 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SalesData",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
 			"sinks": [],
 			"transformations": [],
-			"script": "\nparameters{\n\tYear as integer (2016)\n}"
+			"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp 'yyyy.MM.dd HH:mm:ss'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1) ~> source1"
 		}
 	}
 }
