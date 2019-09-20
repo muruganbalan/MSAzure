@@ -1,0 +1,7 @@
+{
+	"name": "OnPremIR",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "For Connecting to my local laptop SQL Server which is on-premise system."
+	}
+}
