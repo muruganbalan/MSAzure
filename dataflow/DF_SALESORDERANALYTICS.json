@@ -3,10 +3,18 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SalesData",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
 			"sinks": [],
 			"transformations": [],
-			"script": "\n"
+			"script": "\n\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['\\'DataLakeCleansing/raw/sales/\\'+$Year+\\'/**/*.txt\\'']) ~> source1"
 		}
 	}
 }
