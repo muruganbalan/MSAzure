@@ -89,7 +89,7 @@
 			"format": {
 				"type": "OrcFormat"
 			},
-			"fileName": "Transaction.json",
+			"fileName": "*.csv",
 			"folderPath": "publicrestapi/sample"
 		}
 	}
