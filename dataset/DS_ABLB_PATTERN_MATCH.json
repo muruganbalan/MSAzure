@@ -11,86 +11,12 @@
 		},
 		"annotations": [],
 		"type": "AzureBlob",
-		"structure": [
-			{
-				"name": "transaction_id",
-				"type": "Int64"
-			},
-			{
-				"name": "location_id",
-				"type": "Int64"
-			},
-			{
-				"name": "transaction_type",
-				"type": "String"
-			},
-			{
-				"name": "customer_id",
-				"type": "Int64"
-			},
-			{
-				"name": "date",
-				"type": "String"
-			},
-			{
-				"name": "currency",
-				"type": "String"
-			},
-			{
-				"name": "appointments",
-				"type": "String"
-			},
-			{
-				"name": "tenders",
-				"type": "String"
-			},
-			{
-				"name": "lines",
-				"type": "String"
-			},
-			{
-				"name": "transaction_line_id",
-				"type": "Int64"
-			},
-			{
-				"name": "provider_id",
-				"type": "Int64"
-			},
-			{
-				"name": "provider_name",
-				"type": "String"
-			},
-			{
-				"name": "type",
-				"type": "String"
-			},
-			{
-				"name": "sku",
-				"type": "String"
-			},
-			{
-				"name": "product_class",
-				"type": "String"
-			},
-			{
-				"name": "product_subclass",
-				"type": "String"
-			},
-			{
-				"name": "description",
-				"type": "String"
-			},
-			{
-				"name": "sold_price",
-				"type": "Double"
-			}
-		],
 		"typeProperties": {
 			"format": {
 				"type": "OrcFormat"
 			},
-			"fileName": "*.csv",
-			"folderPath": "publicrestapi/sample"
+			"fileName": "\"*.csv\"",
+			"folderPath": "publicrestapi/momentiveSource"
 		}
 	}
 }
