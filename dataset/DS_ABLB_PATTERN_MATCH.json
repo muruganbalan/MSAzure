@@ -6,6 +6,9 @@
 			"referenceName": "LS_ABLB_TRANSACTIONS",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Momentive"
+		},
 		"annotations": [],
 		"type": "AzureBlob",
 		"structure": [
