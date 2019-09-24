@@ -1,0 +1,115 @@
+{
+	"name": "DS_ABLB_PATTERN_MATCH",
+	"properties": {
+		"description": "Source Data Set to Access it from Azure Blob Storage.",
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_TRANSACTIONS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "transaction_id",
+				"type": "Int64"
+			},
+			{
+				"name": "location_id",
+				"type": "Int64"
+			},
+			{
+				"name": "transaction_type",
+				"type": "String"
+			},
+			{
+				"name": "customer_id",
+				"type": "Int64"
+			},
+			{
+				"name": "date",
+				"type": "String"
+			},
+			{
+				"name": "currency",
+				"type": "String"
+			},
+			{
+				"name": "appointments",
+				"type": "String"
+			},
+			{
+				"name": "tenders",
+				"type": "String"
+			},
+			{
+				"name": "lines",
+				"type": "String"
+			},
+			{
+				"name": "transaction_line_id",
+				"type": "Int64"
+			},
+			{
+				"name": "provider_id",
+				"type": "Int64"
+			},
+			{
+				"name": "provider_name",
+				"type": "String"
+			},
+			{
+				"name": "type",
+				"type": "String"
+			},
+			{
+				"name": "sku",
+				"type": "String"
+			},
+			{
+				"name": "product_class",
+				"type": "String"
+			},
+			{
+				"name": "product_subclass",
+				"type": "String"
+			},
+			{
+				"name": "description",
+				"type": "String"
+			},
+			{
+				"name": "sold_price",
+				"type": "Double"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "JsonFormat",
+				"filePattern": "arrayOfObjects",
+				"jsonNodeReference": "$.['lines']",
+				"jsonPathDefinition": {
+					"transaction_id": "$.['transaction_id']",
+					"location_id": "$.['location_id']",
+					"transaction_type": "$.['transaction_type']",
+					"customer_id": "$.['customer_id']",
+					"date": "$.['date']",
+					"currency": "$.['currency']",
+					"appointments": "$.['appointments']",
+					"tenders": "$.['tenders']",
+					"lines": "$.['lines']",
+					"transaction_line_id": "['transaction_line_id']",
+					"provider_id": "['provider_id']",
+					"provider_name": "['provider_name']",
+					"type": "['type']",
+					"sku": "['sku']",
+					"product_class": "['product_class']",
+					"product_subclass": "['product_subclass']",
+					"description": "['description']",
+					"sold_price": "['sold_price']"
+				}
+			},
+			"fileName": "Transaction.json",
+			"folderPath": "publicrestapi/sample"
+		}
+	}
+}
