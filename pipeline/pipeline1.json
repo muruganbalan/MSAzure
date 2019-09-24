@@ -19,11 +19,28 @@
 						"type": "BlobSource",
 						"recursive": true
 					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_ABLB",
+						"referenceName": "DS_ABLB_PATTERN_MATCH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_MOMENTIVE_TGT",
 						"type": "DatasetReference"
 					}
 				]
