@@ -1,6 +1,9 @@
 {
 	"name": "PL_BLOB_PATTERN_COPY",
 	"properties": {
+		"folder": {
+			"name": "Momentive"
+		},
 		"annotations": []
 	}
 }
