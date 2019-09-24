@@ -84,29 +84,7 @@
 		],
 		"typeProperties": {
 			"format": {
-				"type": "JsonFormat",
-				"filePattern": "arrayOfObjects",
-				"jsonNodeReference": "$.['lines']",
-				"jsonPathDefinition": {
-					"transaction_id": "$.['transaction_id']",
-					"location_id": "$.['location_id']",
-					"transaction_type": "$.['transaction_type']",
-					"customer_id": "$.['customer_id']",
-					"date": "$.['date']",
-					"currency": "$.['currency']",
-					"appointments": "$.['appointments']",
-					"tenders": "$.['tenders']",
-					"lines": "$.['lines']",
-					"transaction_line_id": "['transaction_line_id']",
-					"provider_id": "['provider_id']",
-					"provider_name": "['provider_name']",
-					"type": "['type']",
-					"sku": "['sku']",
-					"product_class": "['product_class']",
-					"product_subclass": "['product_subclass']",
-					"description": "['description']",
-					"sold_price": "['sold_price']"
-				}
+				"type": "OrcFormat"
 			},
 			"fileName": "Transaction.json",
 			"folderPath": "publicrestapi/sample"
