@@ -13,7 +13,12 @@
 		"type": "AzureBlob",
 		"typeProperties": {
 			"format": {
-				"type": "OrcFormat"
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": false
 			},
 			"fileName": "\"*.csv\"",
 			"folderPath": "publicrestapi/momentiveSource"
