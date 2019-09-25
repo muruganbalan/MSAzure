@@ -14,7 +14,7 @@
 					"secureInput": false
 				},
 				"typeProperties": {
-					"pythonFile": "dbfs:/mnt/mypath1/sample/pythonintegrationwithadf.py",
+					"pythonFile": "dbfs:/mnt/mypath1/sample/pythonintegrationwithadf1.py",
 					"parameters": []
 				},
 				"linkedServiceName": {
