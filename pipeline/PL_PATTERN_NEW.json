@@ -42,7 +42,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity(‘rawMetadata’).output.childItems",
+						"value": "@activity('rawMetadata').output",
 						"type": "Expression"
 					},
 					"activities": [
