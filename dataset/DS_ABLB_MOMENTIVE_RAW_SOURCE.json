@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "prodrawarea",
+				"folderPath": "prod_raw_area",
 				"container": "momentivesource"
 			}
 		}
