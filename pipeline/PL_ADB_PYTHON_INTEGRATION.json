@@ -13,7 +13,10 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/mnt/mypath1/sample/pythonintegrationwithadf.py",
+					"parameters": []
+				},
 				"linkedServiceName": {
 					"referenceName": "LS_ADB_CON",
 					"type": "LinkedServiceReference"
