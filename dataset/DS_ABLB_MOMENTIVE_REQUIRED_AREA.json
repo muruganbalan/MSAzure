@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),'false')}",
+					"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.txt'),CONCAT('txt_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n          )\n}",
 					"type": "Expression"
 				},
 				"folderPath": "prod_landing_area",
