@@ -12,7 +12,7 @@
 		"annotations": [],
 		"type": "AzureBlob",
 		"typeProperties": {
-			"fileName": "\"*\"",
+			"fileName": "",
 			"folderPath": "publicrestapi/momentiveSource"
 		}
 	}
