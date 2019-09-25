@@ -1,0 +1,314 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "azdevazuredatafactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_DEMO_ADLS_GEN2_SALESORDERANALYTICS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS TO DEMONSTRATE USING AZURE DATALAKE GEN2 (ADLS GEN2) WITH MAPPING DATAFLOW COMPONENT IN ADF.",
+				"activities": [
+					{
+						"name": "DF_SALESORDERANALYTICS",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_SALESORDERANALYTICS",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Year": "2016"
+								},
+								"datasetParameters": {
+									"SalesOrderSource": {},
+									"RankMonthSink": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_DW_ETL_SCD_TYPE1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS TO DEMONSTRATE SCD TYPE 1 USING MAPPING DATA FLOW.",
+				"activities": [
+					{
+						"name": "DF_SCD_TYP1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_SCD_TYP1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"AzureSqlDimCustomer": {},
+									"AzureSqlSrcCustomer": {},
+									"AzureSqlTgtTable": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_SHIR_ONPREM_COPY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS FOR CONNECTING TO THE ONPREM SQL SERVER WITH SELF HOSTED INTERGRATION RUNTIME (SHIR) OPTION.",
+				"activities": [
+					{
+						"name": "Copy_From_OnPrem_SQLServer",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource"
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BusinessEntityID",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "BusinessEntityID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "NationalIDNumber",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NationalIDNumber",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "LoginID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "LoginID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "JobTitle",
+											"type": "String"
+										},
+										"sink": {
+											"name": "JobTitle",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "BirthDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "BirthDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "MaritalStatus",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MaritalStatus",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "HireDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "HireDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "SalariedFlag",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "SalariedFlag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "VacationHours",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "VacationHours",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"name": "SickLeaveHours",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "SickLeaveHours",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"name": "CurrentFlag",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "CurrentFlag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_ONPREM_SQLSERVER_",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_ASQL_TGT_PLAP_EMPLOYEE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_WITH_DATA_FLOW')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS TO DEMONSTRATE ON HOW WE CAN USE ADF MAPPING DATA FLOW WITHIN A PIPELINE",
+				"activities": [
+					{
+						"name": "DF_CUSTOMER_ORDER",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_CUSTOMER_ORDER",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Customer": {},
+									"SalesHeader": {},
+									"TargetSqlServer": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -10,12 +10,480 @@
 		"LS_ONPREMSQL_SOURCE_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
+		},
+		"ds_json_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Customer.json"
+		},
+		"ds_json_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "publicrestapi/sample"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_MOMENTIVE_TGT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "momentiveSource",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_PATTERCOPY_TGT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_required_area",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Rank_by_Month')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "DataLakeCleansing/raw/sales/2016/01",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SalesData')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": "\t",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SalesOrderID",
+						"type": "String"
+					},
+					{
+						"name": "SalesOrderDetailID",
+						"type": "String"
+					},
+					{
+						"name": "OrderQty",
+						"type": "String"
+					},
+					{
+						"name": "ProductID",
+						"type": "String"
+					},
+					{
+						"name": "UnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "UnitPriceDiscount",
+						"type": "String"
+					},
+					{
+						"name": "LineTotal",
+						"type": "String"
+					},
+					{
+						"name": "rowguid",
+						"type": "String"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_json')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "customerID",
+						"type": "Int64"
+					},
+					{
+						"name": "status",
+						"type": "Boolean"
+					},
+					{
+						"name": "deleted",
+						"type": "Boolean"
+					},
+					{
+						"name": "marketViaEmail",
+						"type": "Boolean"
+					},
+					{
+						"name": "marketViaMail",
+						"type": "Boolean"
+					},
+					{
+						"name": "doNotRentEmail",
+						"type": "Boolean"
+					},
+					{
+						"name": "doNotRentMail",
+						"type": "Boolean"
+					},
+					{
+						"name": "firstVisit",
+						"type": "String"
+					},
+					{
+						"name": "lastVisit",
+						"type": "String"
+					},
+					{
+						"name": "group",
+						"type": "String"
+					},
+					{
+						"name": "prefix",
+						"type": "String"
+					},
+					{
+						"name": "firstName",
+						"type": "String"
+					},
+					{
+						"name": "lastName",
+						"type": "String"
+					},
+					{
+						"name": "gender",
+						"type": "String"
+					},
+					{
+						"name": "birthMonth",
+						"type": "String"
+					},
+					{
+						"name": "birthDay",
+						"type": "String"
+					},
+					{
+						"name": "address",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "state",
+						"type": "String"
+					},
+					{
+						"name": "postalCode",
+						"type": "String"
+					},
+					{
+						"name": "country",
+						"type": "String"
+					},
+					{
+						"name": "email",
+						"type": "String"
+					},
+					{
+						"name": "workphone",
+						"type": "String"
+					},
+					{
+						"name": "homephone",
+						"type": "String"
+					},
+					{
+						"name": "mobilephone",
+						"type": "String"
+					},
+					{
+						"name": "extCustomerId",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "JsonFormat",
+						"filePattern": "arrayOfObjects",
+						"jsonPathDefinition": {
+							"customerID": "$.['customerID']",
+							"status": "$.['status']",
+							"deleted": "$.['deleted']",
+							"marketViaEmail": "$.['marketViaEmail']",
+							"marketViaMail": "$.['marketViaMail']",
+							"doNotRentEmail": "$.['doNotRentEmail']",
+							"doNotRentMail": "$.['doNotRentMail']",
+							"firstVisit": "$.['firstVisit']",
+							"lastVisit": "$.['lastVisit']",
+							"group": "$.['group']",
+							"prefix": "$.['prefix']",
+							"firstName": "$.['firstName']",
+							"lastName": "$.['lastName']",
+							"gender": "$.['gender']",
+							"birthMonth": "$.['birthMonth']",
+							"birthDay": "$.['birthDay']",
+							"address": "$.['address']",
+							"city": "$.['city']",
+							"state": "$.['state']",
+							"postalCode": "$.['postalCode']",
+							"country": "$.['country']",
+							"email": "$.['email']",
+							"workphone": "$.['workphone']",
+							"homephone": "$.['homephone']",
+							"mobilephone": "$.['mobilephone']",
+							"extCustomerId": "$.['extCustomerId']"
+						}
+					},
+					"fileName": "[parameters('ds_json_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('ds_json_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/json_Parsed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Customer.csv",
+						"folderPath": "sample",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "customerID",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "deleted",
+						"type": "String"
+					},
+					{
+						"name": "marketViaEmail",
+						"type": "String"
+					},
+					{
+						"name": "marketViaMail",
+						"type": "String"
+					},
+					{
+						"name": "doNotRentEmail",
+						"type": "String"
+					},
+					{
+						"name": "doNotRentMail",
+						"type": "String"
+					},
+					{
+						"name": "firstVisit",
+						"type": "String"
+					},
+					{
+						"name": "lastVisit",
+						"type": "String"
+					},
+					{
+						"name": "group",
+						"type": "String"
+					},
+					{
+						"name": "prefix",
+						"type": "String"
+					},
+					{
+						"name": "firstName",
+						"type": "String"
+					},
+					{
+						"name": "lastName",
+						"type": "String"
+					},
+					{
+						"name": "gender",
+						"type": "String"
+					},
+					{
+						"name": "birthMonth",
+						"type": "String"
+					},
+					{
+						"name": "birthDay",
+						"type": "String"
+					},
+					{
+						"name": "address",
+						"type": "String"
+					},
+					{
+						"name": "city",
+						"type": "String"
+					},
+					{
+						"name": "state",
+						"type": "String"
+					},
+					{
+						"name": "postalCode",
+						"type": "String"
+					},
+					{
+						"name": "country",
+						"type": "String"
+					},
+					{
+						"name": "email",
+						"type": "String"
+					},
+					{
+						"name": "workphone",
+						"type": "String"
+					},
+					{
+						"name": "homephone",
+						"type": "String"
+					},
+					{
+						"name": "mobilephone",
+						"type": "String"
+					},
+					{
+						"name": "extCustomerId",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ONPREMSQL_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service is for connecting to the on-premise SQL server database with Self Hosted Integration RunTime.",
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "OnPremIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/WeeklyTrigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
@@ -47,109 +515,69 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_ONPREMSQL_SOURCE')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "This linked service is for connecting to the on-premise SQL server database with Self Hosted Integration RunTime.",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
 				},
-				"connectVia": {
-					"referenceName": "OnPremIR",
-					"type": "IntegrationRuntimeReference"
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_NEW_SOURCE')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
+					"referenceName": "LS_ABLB_MOMENTIVE",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BusinessEntityID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NationalIDNumber",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LoginID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrganizationNode",
-						"type": "tgt_olap.sys.hierarchyid"
-					},
-					{
-						"name": "OrganizationLevel",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "JobTitle",
-						"type": "nvarchar"
-					},
-					{
-						"name": "BirthDate",
-						"type": "date"
-					},
-					{
-						"name": "MaritalStatus",
-						"type": "nchar"
-					},
-					{
-						"name": "Gender",
-						"type": "nchar"
-					},
-					{
-						"name": "HireDate",
-						"type": "date"
-					},
-					{
-						"name": "SalariedFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VacationHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "SickLeaveHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "CurrentFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
+				"type": "Binary",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "Employee"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "@item().name",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "prod_landing_area",
+						"container": "momentivesource"
+					}
 				}
 			},
 			"dependsOn": []
@@ -585,7 +1013,10 @@
 				],
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_json')]",
+				"[concat(variables('factoryId'), '/datasets/json_Parsed')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_PROCESS_TRANSACTION')]",
@@ -824,154 +1255,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_CUSTOMER_ORDER')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_SRC_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "Customer",
-							"typeProperties": {}
-						},
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_SALESHEADER",
-								"type": "DatasetReference"
-							},
-							"name": "SalesHeader",
-							"typeProperties": {}
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_TGT_CUSTOMERORDER",
-								"type": "DatasetReference"
-							},
-							"name": "TargetSqlServer"
-						}
-					],
-					"transformations": [
-						{
-							"name": "CustomerVsSalesOrder"
-						},
-						{
-							"name": "AggCustomerOrders"
-						}
-					],
-					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customer\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tRevisionNumber as integer,\n\t\tOrderDate as timestamp,\n\t\tDueDate as timestamp,\n\t\tShipDate as timestamp,\n\t\tStatus as integer,\n\t\tOnlineOrderFlag as boolean,\n\t\tSalesOrderNumber as string,\n\t\tPurchaseOrderNumber as string,\n\t\tAccountNumber as string,\n\t\tCustomerID as integer,\n\t\tShipToAddressID as integer,\n\t\tBillToAddressID as integer,\n\t\tShipMethod as string,\n\t\tCreditCardApprovalCode as string,\n\t\tSubTotal as decimal(19,4),\n\t\tTaxAmt as decimal(19,4),\n\t\tFreight as decimal(19,4),\n\t\tTotalDue as decimal(19,4),\n\t\tComment as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SalesHeader\nCustomer, SalesHeader join(Customer@CustomerID == SalesHeader@CustomerID,\n\tjoinType:'left',\n\tbroadcast: 'none')~> CustomerVsSalesOrder\nCustomerVsSalesOrder aggregate(groupBy(Customer@CustomerID),\n\tNumberOfOrders = count(SalesOrderID),\n\t\tTotalOrderAmount = sum(TotalDue)) ~> AggCustomerOrders\nAggCustomerOrders sink(input(\n\t\tCustomerId as integer,\n\t\tNumberOfOrders as integer,\n\t\tTotalAmount as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tCustomerId = CustomerID,\n\t\tNumberOfOrders,\n\t\tTotalAmount = TotalOrderAmount\n\t)) ~> TargetSqlServer"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DF_SALESORDERANALYTICS')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "SalesData",
-								"type": "DatasetReference"
-							},
-							"name": "SalesOrderSource",
-							"typeProperties": {}
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "Rank_by_Month",
-								"type": "DatasetReference"
-							},
-							"name": "RankMonthSink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "GetRequiredData"
-						},
-						{
-							"name": "DeriveMonthYear"
-						},
-						{
-							"name": "TotalAggregate"
-						},
-						{
-							"name": "RankByMonth"
-						}
-					],
-					"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1,\n\twildcardPaths:['DataLakeCleansing/raw/sales/\\'+$Year+\\'/**/*.txt']) ~> SalesOrderSource\nSalesOrderSource select(mapColumn(\n\t\tSalesOrderID,\n\t\tSalesOrderDetailID,\n\t\tOrderQty,\n\t\tProductID,\n\t\tUnitPrice,\n\t\tUnitPriceDiscount,\n\t\tLineTotal,\n\t\tModifiedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredData\nGetRequiredData derive(OrderedDate_Month = month(ModifiedDate),\n\t\tOrderedDate_Year = year(ModifiedDate)) ~> DeriveMonthYear\nDeriveMonthYear aggregate(groupBy(OrderedDate_Month,\n\t\tOrderedDate_Year),\n\tTotal = sum((UnitPrice)*(OrderQty))) ~> TotalAggregate\nTotalAggregate window(over(OrderedDate_Month),\n\tdesc(Total, false),\n\tRanking = denseRank(Total)) ~> RankByMonth\nRankByMonth sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Rank_by_Month.txt'],\n\tpartitionBy('hash', 1)) ~> RankMonthSink"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DF_SCD_TYP1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_TGT_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "AzureSqlDimCustomer",
-							"typeProperties": {}
-						},
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_SRC_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "AzureSqlSrcCustomer",
-							"typeProperties": {}
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DS_ASQL_TGT_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "AzureSqlTgtTable"
-						}
-					],
-					"transformations": [
-						{
-							"name": "HashKey"
-						},
-						{
-							"name": "RecordExists"
-						},
-						{
-							"name": "LkpCustomer"
-						},
-						{
-							"name": "CreateAuditColumns"
-						},
-						{
-							"name": "Upsert"
-						}
-					],
-					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlDimCustomer\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlSrcCustomer\nAzureSqlSrcCustomer derive(HashKey = sha1(FirstName+LastName+CompanyName)) ~> HashKey\nHashKey, AzureSqlDimCustomer exists(HashKey@HashKey == AzureSqlDimCustomer@HashKey,\n\tnegate:true,\n\tbroadcast: 'none')~> RecordExists\nRecordExists, AzureSqlDimCustomer lookup(AzureSqlSrcCustomer@CustomerID == AzureSqlDimCustomer@CustomerID,\n\tbroadcast: 'none')~> LkpCustomer\nLkpCustomer derive(InsertedDate = iif(isNull(InsertedDate),currentTimestamp(),{InsertedDate}),\n\t\tUpdatedDate = currentTimestamp()) ~> CreateAuditColumns\nCreateAuditColumns alterRow(upsertIf(true())) ~> Upsert\nUpsert sink(input(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CustomerID'],\n\tmapColumn(\n\t\tCustomerID = AzureSqlSrcCustomer@CustomerID,\n\t\tNameStyle = AzureSqlSrcCustomer@NameStyle,\n\t\tTitle = AzureSqlSrcCustomer@Title,\n\t\tFirstName = AzureSqlSrcCustomer@FirstName,\n\t\tMiddleName = AzureSqlSrcCustomer@MiddleName,\n\t\tLastName = AzureSqlSrcCustomer@LastName,\n\t\tSuffix = AzureSqlSrcCustomer@Suffix,\n\t\tCompanyName = AzureSqlSrcCustomer@CompanyName,\n\t\tSalesPerson = AzureSqlSrcCustomer@SalesPerson,\n\t\tEmailAddress = AzureSqlSrcCustomer@EmailAddress,\n\t\tPhone = AzureSqlSrcCustomer@Phone,\n\t\tPasswordHash = AzureSqlSrcCustomer@PasswordHash,\n\t\tPasswordSalt = AzureSqlSrcCustomer@PasswordSalt,\n\t\trowguid = AzureSqlSrcCustomer@rowguid,\n\t\tInsertedDate,\n\t\tUpdatedDate,\n\t\tHashKey = HashKey@HashKey\n\t)) ~> AzureSqlTgtTable"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/DS_ONPREM_SQLSERVER_')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1064,96 +1347,165 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_DEMO_ADLS_GEN2_SALESORDERANALYTICS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/DF_CUSTOMER_ORDER')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "THIS PIPELINE IS TO DEMONSTRATE USING AZURE DATALAKE GEN2 (ADLS GEN2) WITH MAPPING DATAFLOW COMPONENT IN ADF.",
-				"activities": [
-					{
-						"name": "DF_SALESORDERANALYTICS",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_SALESORDERANALYTICS",
-								"type": "DataFlowReference",
-								"parameters": {
-									"Year": "2016"
-								},
-								"datasetParameters": {
-									"SalesOrderSource": {},
-									"RankMonthSink": {}
-								}
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_SRC_CUSTOMER",
+								"type": "DatasetReference"
 							},
-							"staging": {}
+							"name": "Customer",
+							"typeProperties": {}
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_SALESHEADER",
+								"type": "DatasetReference"
+							},
+							"name": "SalesHeader",
+							"typeProperties": {}
 						}
-					}
-				],
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_CUSTOMERORDER",
+								"type": "DatasetReference"
+							},
+							"name": "TargetSqlServer"
+						}
+					],
+					"transformations": [
+						{
+							"name": "CustomerVsSalesOrder"
+						},
+						{
+							"name": "AggCustomerOrders"
+						}
+					],
+					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customer\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tRevisionNumber as integer,\n\t\tOrderDate as timestamp,\n\t\tDueDate as timestamp,\n\t\tShipDate as timestamp,\n\t\tStatus as integer,\n\t\tOnlineOrderFlag as boolean,\n\t\tSalesOrderNumber as string,\n\t\tPurchaseOrderNumber as string,\n\t\tAccountNumber as string,\n\t\tCustomerID as integer,\n\t\tShipToAddressID as integer,\n\t\tBillToAddressID as integer,\n\t\tShipMethod as string,\n\t\tCreditCardApprovalCode as string,\n\t\tSubTotal as decimal(19,4),\n\t\tTaxAmt as decimal(19,4),\n\t\tFreight as decimal(19,4),\n\t\tTotalDue as decimal(19,4),\n\t\tComment as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SalesHeader\nCustomer, SalesHeader join(Customer@CustomerID == SalesHeader@CustomerID,\n\tjoinType:'left',\n\tbroadcast: 'none')~> CustomerVsSalesOrder\nCustomerVsSalesOrder aggregate(groupBy(Customer@CustomerID),\n\tNumberOfOrders = count(SalesOrderID),\n\t\tTotalOrderAmount = sum(TotalDue)) ~> AggCustomerOrders\nAggCustomerOrders sink(input(\n\t\tCustomerId as integer,\n\t\tNumberOfOrders as integer,\n\t\tTotalAmount as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tCustomerId = CustomerID,\n\t\tNumberOfOrders,\n\t\tTotalAmount = TotalOrderAmount\n\t)) ~> TargetSqlServer"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_SALESORDERANALYTICS')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SalesData",
+								"type": "DatasetReference"
+							},
+							"name": "SalesOrderSource",
+							"typeProperties": {}
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Rank_by_Month",
+								"type": "DatasetReference"
+							},
+							"name": "RankMonthSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "GetRequiredData"
+						},
+						{
+							"name": "DeriveMonthYear"
+						},
+						{
+							"name": "TotalAggregate"
+						},
+						{
+							"name": "RankByMonth"
+						}
+					],
+					"script": "\nparameters{\n\tYear as integer (2016)\n}\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tSalesOrderDetailID as integer,\n\t\tOrderQty as integer,\n\t\tProductID as integer,\n\t\tUnitPrice as decimal(10,0),\n\t\tUnitPriceDiscount as decimal(10,0),\n\t\tLineTotal as decimal(10,0),\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinferDriftedColumnTypes: true,\n\tskipLines: 1,\n\twildcardPaths:['DataLakeCleansing/raw/sales/\\'+$Year+\\'/**/*.txt']) ~> SalesOrderSource\nSalesOrderSource select(mapColumn(\n\t\tSalesOrderID,\n\t\tSalesOrderDetailID,\n\t\tOrderQty,\n\t\tProductID,\n\t\tUnitPrice,\n\t\tUnitPriceDiscount,\n\t\tLineTotal,\n\t\tModifiedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetRequiredData\nGetRequiredData derive(OrderedDate_Month = month(ModifiedDate),\n\t\tOrderedDate_Year = year(ModifiedDate)) ~> DeriveMonthYear\nDeriveMonthYear aggregate(groupBy(OrderedDate_Month,\n\t\tOrderedDate_Year),\n\tTotal = sum((UnitPrice)*(OrderQty))) ~> TotalAggregate\nTotalAggregate window(over(OrderedDate_Month),\n\tdesc(Total, false),\n\tRanking = denseRank(Total)) ~> RankByMonth\nRankByMonth sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Rank_by_Month.txt'],\n\tpartitionBy('hash', 1)) ~> RankMonthSink"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DF_SALESORDERANALYTICS')]"
+				"[concat(variables('factoryId'), '/datasets/Rank_by_Month')]",
+				"[concat(variables('factoryId'), '/datasets/SalesData')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_DW_ETL_SCD_TYPE1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/DF_SCD_TYP1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "THIS PIPELINE IS TO DEMONSTRATE SCD TYPE 1 USING MAPPING DATA FLOW.",
-				"activities": [
-					{
-						"name": "DF_SCD_TYP1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_SCD_TYP1",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"AzureSqlDimCustomer": {},
-									"AzureSqlSrcCustomer": {},
-									"AzureSqlTgtTable": {}
-								}
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_CUSTOMER",
+								"type": "DatasetReference"
 							},
-							"staging": {}
+							"name": "AzureSqlDimCustomer",
+							"typeProperties": {}
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_SRC_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "AzureSqlSrcCustomer",
+							"typeProperties": {}
 						}
-					}
-				],
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "AzureSqlTgtTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "HashKey"
+						},
+						{
+							"name": "RecordExists"
+						},
+						{
+							"name": "LkpCustomer"
+						},
+						{
+							"name": "CreateAuditColumns"
+						},
+						{
+							"name": "Upsert"
+						}
+					],
+					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlDimCustomer\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlSrcCustomer\nAzureSqlSrcCustomer derive(HashKey = sha1(FirstName+LastName+CompanyName)) ~> HashKey\nHashKey, AzureSqlDimCustomer exists(HashKey@HashKey == AzureSqlDimCustomer@HashKey,\n\tnegate:true,\n\tbroadcast: 'none')~> RecordExists\nRecordExists, AzureSqlDimCustomer lookup(AzureSqlSrcCustomer@CustomerID == AzureSqlDimCustomer@CustomerID,\n\tbroadcast: 'none')~> LkpCustomer\nLkpCustomer derive(InsertedDate = iif(isNull(InsertedDate),currentTimestamp(),{InsertedDate}),\n\t\tUpdatedDate = currentTimestamp()) ~> CreateAuditColumns\nCreateAuditColumns alterRow(upsertIf(true())) ~> Upsert\nUpsert sink(input(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CustomerID'],\n\tmapColumn(\n\t\tCustomerID = AzureSqlSrcCustomer@CustomerID,\n\t\tNameStyle = AzureSqlSrcCustomer@NameStyle,\n\t\tTitle = AzureSqlSrcCustomer@Title,\n\t\tFirstName = AzureSqlSrcCustomer@FirstName,\n\t\tMiddleName = AzureSqlSrcCustomer@MiddleName,\n\t\tLastName = AzureSqlSrcCustomer@LastName,\n\t\tSuffix = AzureSqlSrcCustomer@Suffix,\n\t\tCompanyName = AzureSqlSrcCustomer@CompanyName,\n\t\tSalesPerson = AzureSqlSrcCustomer@SalesPerson,\n\t\tEmailAddress = AzureSqlSrcCustomer@EmailAddress,\n\t\tPhone = AzureSqlSrcCustomer@Phone,\n\t\tPasswordHash = AzureSqlSrcCustomer@PasswordHash,\n\t\tPasswordSalt = AzureSqlSrcCustomer@PasswordSalt,\n\t\trowguid = AzureSqlSrcCustomer@rowguid,\n\t\tInsertedDate,\n\t\tUpdatedDate,\n\t\tHashKey = HashKey@HashKey\n\t)) ~> AzureSqlTgtTable"
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DF_SCD_TYP1')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_WITH_DATA_FLOW')]",
+			"name": "[concat(parameters('factoryName'), '/PL_PATTERN_NEW')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "THIS PIPELINE IS TO DEMONSTRATE ON HOW WE CAN USE ADF MAPPING DATA FLOW WITHIN A PIPELINE",
 				"activities": [
 					{
-						"name": "DF_CUSTOMER_ORDER",
-						"type": "ExecuteDataFlow",
+						"name": "rawMetadata",
+						"type": "GetMetadata",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -1164,210 +1516,204 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_CUSTOMER_ORDER",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Customer": {},
-									"SalesHeader": {},
-									"TargetSqlServer": {}
-								}
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
 							},
-							"staging": {}
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
 						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DF_CUSTOMER_ORDER')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_SHIR_ONPREM_COPY')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "THIS PIPELINE IS FOR CONNECTING TO THE ONPREM SQL SERVER WITH SELF HOSTED INTERGRATION RUNTIME (SHIR) OPTION.",
-				"activities": [
+					},
 					{
-						"name": "Copy_From_OnPrem_SQLServer",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource"
-							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "BusinessEntityID",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "BusinessEntityID",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"name": "NationalIDNumber",
-											"type": "String"
-										},
-										"sink": {
-											"name": "NationalIDNumber",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "LoginID",
-											"type": "String"
-										},
-										"sink": {
-											"name": "LoginID",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "JobTitle",
-											"type": "String"
-										},
-										"sink": {
-											"name": "JobTitle",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "BirthDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "BirthDate",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "MaritalStatus",
-											"type": "String"
-										},
-										"sink": {
-											"name": "MaritalStatus",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Gender",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Gender",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "HireDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "HireDate",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "SalariedFlag",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "SalariedFlag",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "VacationHours",
-											"type": "Int16"
-										},
-										"sink": {
-											"name": "VacationHours",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"name": "SickLeaveHours",
-											"type": "Int16"
-										},
-										"sink": {
-											"name": "SickLeaveHours",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"name": "CurrentFlag",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "CurrentFlag",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "ModifiedDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "ModifiedDate",
-											"type": "DateTime"
-										}
-									}
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
 								]
 							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_ONPREM_SQLSERVER_",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
 						],
-						"outputs": [
-							{
-								"referenceName": "DS_ASQL_TGT_PLAP_EMPLOYEE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
+				"folder": {
+					"name": "Momentive"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_SQLSERVER_')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_PLAP_EMPLOYEE')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_MOMENTIVE_CATEGORIZE_FILES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This pipeline is for connecting to the momentive source raw files (prod_raw_area) and split the source files according to the pattern we define into the prod_staging_area",
+				"activities": [
+					{
+						"name": "rawMetadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
 			]
 		}
 	]

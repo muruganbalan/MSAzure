@@ -35,6 +35,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -821,6 +825,192 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_SHIR_ONPREM_COPY')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "THIS PIPELINE IS FOR CONNECTING TO THE ONPREM SQL SERVER WITH SELF HOSTED INTERGRATION RUNTIME (SHIR) OPTION.",
+				"activities": [
+					{
+						"name": "Copy_From_OnPrem_SQLServer",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource"
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "BusinessEntityID",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "BusinessEntityID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "NationalIDNumber",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NationalIDNumber",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "LoginID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "LoginID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "JobTitle",
+											"type": "String"
+										},
+										"sink": {
+											"name": "JobTitle",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "BirthDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "BirthDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "MaritalStatus",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MaritalStatus",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Gender",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Gender",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "HireDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "HireDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "SalariedFlag",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "SalariedFlag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "VacationHours",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "VacationHours",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"name": "SickLeaveHours",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "SickLeaveHours",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"name": "CurrentFlag",
+											"type": "Boolean"
+										},
+										"sink": {
+											"name": "CurrentFlag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "ModifiedDate",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_ONPREM_SQLSERVER_",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_ASQL_TGT_PLAP_EMPLOYEE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_SQLSERVER_')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_PLAP_EMPLOYEE')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_WITH_DATA_FLOW')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -858,6 +1048,55 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DF_CUSTOMER_ORDER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Binary1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@item().name",
+							"type": "Expression"
+						},
+						"container": "publicrestapi"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Binary2_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_required_area",
+						"container": "publicrestapi"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
 			]
 		},
 		{
@@ -1440,6 +1679,98 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_TGT_OLAP",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BusinessEntityID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NationalIDNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LoginID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "OrganizationNode",
+						"type": "tgt_olap.sys.hierarchyid"
+					},
+					{
+						"name": "OrganizationLevel",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "JobTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BirthDate",
+						"type": "date"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "nchar"
+					},
+					{
+						"name": "Gender",
+						"type": "nchar"
+					},
+					{
+						"name": "HireDate",
+						"type": "date"
+					},
+					{
+						"name": "SalariedFlag",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VacationHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "SickLeaveHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CurrentFlag",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_CSV_TRANSACTION')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1460,6 +1791,168 @@
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_MOMENTIVE_TGT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "momentiveSource",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ONPREM_SQLSERVER_')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ONPREMSQL_SOURCE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "BusinessEntityID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NationalIDNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LoginID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "OrganizationNode",
+						"type": "AdventureWorks2012.sys.hierarchyid"
+					},
+					{
+						"name": "OrganizationLevel",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "JobTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BirthDate",
+						"type": "date"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "nchar"
+					},
+					{
+						"name": "Gender",
+						"type": "nchar"
+					},
+					{
+						"name": "HireDate",
+						"type": "date"
+					},
+					{
+						"name": "SalariedFlag",
+						"type": "bit"
+					},
+					{
+						"name": "VacationHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "SickLeaveHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CurrentFlag",
+						"type": "bit"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Employee1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ONPREMSQL_SOURCE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_PATTERCOPY_TGT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_required_area",
+						"container": "publicrestapi"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
 				"schema": []
@@ -1942,6 +2435,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LS_ONPREMSQL_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service is for connecting to the on-premise SQL server database with Self Hosted Integration RunTime.",
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "OnPremIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/OnPremIR')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DailyLogProcessingTrigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -1996,6 +2509,17 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/triggers/DailyLogProcessingTrigger')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OnPremIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "For Connecting to my local laptop SQL Server which is on-premise system.",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DF_CUSTOMER_ORDER')]",
@@ -2156,230 +2680,51 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/OnPremIR')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "SelfHosted",
-				"description": "For Connecting to my local laptop SQL Server which is on-premise system.",
-				"typeProperties": {}
+				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
+				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_ONPREMSQL_SOURCE')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This linked service is for connecting to the on-premise SQL server database with Self Hosted Integration RunTime.",
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "OnPremIR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/OnPremIR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ONPREM_SQLSERVER_')]",
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_ONPREMSQL_SOURCE",
+					"referenceName": "LS_ABLB_MOMENTIVE",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "BusinessEntityID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NationalIDNumber",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LoginID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrganizationNode",
-						"type": "AdventureWorks2012.sys.hierarchyid"
-					},
-					{
-						"name": "OrganizationLevel",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "JobTitle",
-						"type": "nvarchar"
-					},
-					{
-						"name": "BirthDate",
-						"type": "date"
-					},
-					{
-						"name": "MaritalStatus",
-						"type": "nchar"
-					},
-					{
-						"name": "Gender",
-						"type": "nchar"
-					},
-					{
-						"name": "HireDate",
-						"type": "date"
-					},
-					{
-						"name": "SalariedFlag",
-						"type": "bit"
-					},
-					{
-						"name": "VacationHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "SickLeaveHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "CurrentFlag",
-						"type": "bit"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
+				"type": "Binary",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "Employee1"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ONPREMSQL_SOURCE')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BusinessEntityID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NationalIDNumber",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LoginID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrganizationNode",
-						"type": "tgt_olap.sys.hierarchyid"
-					},
-					{
-						"name": "OrganizationLevel",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "JobTitle",
-						"type": "nvarchar"
-					},
-					{
-						"name": "BirthDate",
-						"type": "date"
-					},
-					{
-						"name": "MaritalStatus",
-						"type": "nchar"
-					},
-					{
-						"name": "Gender",
-						"type": "nchar"
-					},
-					{
-						"name": "HireDate",
-						"type": "date"
-					},
-					{
-						"name": "SalariedFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VacationHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "SickLeaveHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "CurrentFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Employee"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_SHIR_ONPREM_COPY')]",
+			"name": "[concat(parameters('factoryName'), '/PL_PATTERN_NEW')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "THIS PIPELINE IS FOR CONNECTING TO THE ONPREM SQL SERVER WITH SELF HOSTED INTERGRATION RUNTIME (SHIR) OPTION.",
 				"activities": [
 					{
-						"name": "Copy_From_OnPrem_SQLServer",
-						"type": "Copy",
+						"name": "rawMetadata",
+						"type": "GetMetadata",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -2390,170 +2735,255 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource"
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
 							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "BusinessEntityID",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "BusinessEntityID",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"name": "NationalIDNumber",
-											"type": "String"
-										},
-										"sink": {
-											"name": "NationalIDNumber",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "LoginID",
-											"type": "String"
-										},
-										"sink": {
-											"name": "LoginID",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "JobTitle",
-											"type": "String"
-										},
-										"sink": {
-											"name": "JobTitle",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "BirthDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "BirthDate",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "MaritalStatus",
-											"type": "String"
-										},
-										"sink": {
-											"name": "MaritalStatus",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Gender",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Gender",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "HireDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "HireDate",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "SalariedFlag",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "SalariedFlag",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "VacationHours",
-											"type": "Int16"
-										},
-										"sink": {
-											"name": "VacationHours",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"name": "SickLeaveHours",
-											"type": "Int16"
-										},
-										"sink": {
-											"name": "SickLeaveHours",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"name": "CurrentFlag",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "CurrentFlag",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "ModifiedDate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "ModifiedDate",
-											"type": "DateTime"
-										}
-									}
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
 								]
 							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_ONPREM_SQLSERVER_",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
 						],
-						"outputs": [
-							{
-								"referenceName": "DS_ASQL_TGT_PLAP_EMPLOYEE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
+				"folder": {
+					"name": "Momentive"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_SQLSERVER_')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_PLAP_EMPLOYEE')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_NEW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "@item().name",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "prod_landing_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_MOMENTIVE_CATEGORIZE_FILES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This pipeline is for connecting to the momentive source raw files (prod_raw_area) and split the source files according to the pattern we define into the prod_staging_area",
+				"activities": [
+					{
+						"name": "rawMetadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
 			]
 		}
 	]

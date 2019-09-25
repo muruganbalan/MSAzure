@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_TGT_OLAP'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"LS_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://azdevadls.dfs.core.windows.net"
@@ -40,14 +44,6 @@
 			"defaultValue": "Transaction.json"
 		},
 		"DS_ABLB_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": "publicrestapi/sample"
-		},
-		"ds_json_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "Customer.json"
-		},
-		"ds_json_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "publicrestapi/sample"
 		}
@@ -179,6 +175,69 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Binary1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@item().name",
+							"type": "Expression"
+						},
+						"container": "publicrestapi"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Binary2_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_TRANSACTIONS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_required_area",
+						"container": "publicrestapi"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DS_ABLB')]",
@@ -760,6 +819,98 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_TGT_OLAP",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BusinessEntityID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NationalIDNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LoginID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "OrganizationNode",
+						"type": "tgt_olap.sys.hierarchyid"
+					},
+					{
+						"name": "OrganizationLevel",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "JobTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BirthDate",
+						"type": "date"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "nchar"
+					},
+					{
+						"name": "Gender",
+						"type": "nchar"
+					},
+					{
+						"name": "HireDate",
+						"type": "date"
+					},
+					{
+						"name": "SalariedFlag",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VacationHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "SickLeaveHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CurrentFlag",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_CSV_TRANSACTION')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -786,390 +937,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Rank_by_Month')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ADLS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "DataLakeCleansing/raw/sales/2016/01",
-						"fileSystem": "datalake"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SalesData')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ADLS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileSystem": "datalake"
-					},
-					"columnDelimiter": "\t",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "SalesOrderID",
-						"type": "String"
-					},
-					{
-						"name": "SalesOrderDetailID",
-						"type": "String"
-					},
-					{
-						"name": "OrderQty",
-						"type": "String"
-					},
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "UnitPrice",
-						"type": "String"
-					},
-					{
-						"name": "UnitPriceDiscount",
-						"type": "String"
-					},
-					{
-						"name": "LineTotal",
-						"type": "String"
-					},
-					{
-						"name": "rowguid",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_json')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureBlob",
-				"structure": [
-					{
-						"name": "customerID",
-						"type": "Int64"
-					},
-					{
-						"name": "status",
-						"type": "Boolean"
-					},
-					{
-						"name": "deleted",
-						"type": "Boolean"
-					},
-					{
-						"name": "marketViaEmail",
-						"type": "Boolean"
-					},
-					{
-						"name": "marketViaMail",
-						"type": "Boolean"
-					},
-					{
-						"name": "doNotRentEmail",
-						"type": "Boolean"
-					},
-					{
-						"name": "doNotRentMail",
-						"type": "Boolean"
-					},
-					{
-						"name": "firstVisit",
-						"type": "String"
-					},
-					{
-						"name": "lastVisit",
-						"type": "String"
-					},
-					{
-						"name": "group",
-						"type": "String"
-					},
-					{
-						"name": "prefix",
-						"type": "String"
-					},
-					{
-						"name": "firstName",
-						"type": "String"
-					},
-					{
-						"name": "lastName",
-						"type": "String"
-					},
-					{
-						"name": "gender",
-						"type": "String"
-					},
-					{
-						"name": "birthMonth",
-						"type": "String"
-					},
-					{
-						"name": "birthDay",
-						"type": "String"
-					},
-					{
-						"name": "address",
-						"type": "String"
-					},
-					{
-						"name": "city",
-						"type": "String"
-					},
-					{
-						"name": "state",
-						"type": "String"
-					},
-					{
-						"name": "postalCode",
-						"type": "String"
-					},
-					{
-						"name": "country",
-						"type": "String"
-					},
-					{
-						"name": "email",
-						"type": "String"
-					},
-					{
-						"name": "workphone",
-						"type": "String"
-					},
-					{
-						"name": "homephone",
-						"type": "String"
-					},
-					{
-						"name": "mobilephone",
-						"type": "String"
-					},
-					{
-						"name": "extCustomerId",
-						"type": "String"
-					}
-				],
-				"typeProperties": {
-					"format": {
-						"type": "JsonFormat",
-						"filePattern": "arrayOfObjects",
-						"jsonPathDefinition": {
-							"customerID": "$.['customerID']",
-							"status": "$.['status']",
-							"deleted": "$.['deleted']",
-							"marketViaEmail": "$.['marketViaEmail']",
-							"marketViaMail": "$.['marketViaMail']",
-							"doNotRentEmail": "$.['doNotRentEmail']",
-							"doNotRentMail": "$.['doNotRentMail']",
-							"firstVisit": "$.['firstVisit']",
-							"lastVisit": "$.['lastVisit']",
-							"group": "$.['group']",
-							"prefix": "$.['prefix']",
-							"firstName": "$.['firstName']",
-							"lastName": "$.['lastName']",
-							"gender": "$.['gender']",
-							"birthMonth": "$.['birthMonth']",
-							"birthDay": "$.['birthDay']",
-							"address": "$.['address']",
-							"city": "$.['city']",
-							"state": "$.['state']",
-							"postalCode": "$.['postalCode']",
-							"country": "$.['country']",
-							"email": "$.['email']",
-							"workphone": "$.['workphone']",
-							"homephone": "$.['homephone']",
-							"mobilephone": "$.['mobilephone']",
-							"extCustomerId": "$.['extCustomerId']"
-						}
-					},
-					"fileName": "[parameters('ds_json_properties_typeProperties_fileName')]",
-					"folderPath": "[parameters('ds_json_properties_typeProperties_folderPath')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/json_Parsed')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Customer.csv",
-						"folderPath": "sample",
-						"container": "publicrestapi"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "customerID",
-						"type": "String"
-					},
-					{
-						"name": "status",
-						"type": "String"
-					},
-					{
-						"name": "deleted",
-						"type": "String"
-					},
-					{
-						"name": "marketViaEmail",
-						"type": "String"
-					},
-					{
-						"name": "marketViaMail",
-						"type": "String"
-					},
-					{
-						"name": "doNotRentEmail",
-						"type": "String"
-					},
-					{
-						"name": "doNotRentMail",
-						"type": "String"
-					},
-					{
-						"name": "firstVisit",
-						"type": "String"
-					},
-					{
-						"name": "lastVisit",
-						"type": "String"
-					},
-					{
-						"name": "group",
-						"type": "String"
-					},
-					{
-						"name": "prefix",
-						"type": "String"
-					},
-					{
-						"name": "firstName",
-						"type": "String"
-					},
-					{
-						"name": "lastName",
-						"type": "String"
-					},
-					{
-						"name": "gender",
-						"type": "String"
-					},
-					{
-						"name": "birthMonth",
-						"type": "String"
-					},
-					{
-						"name": "birthDay",
-						"type": "String"
-					},
-					{
-						"name": "address",
-						"type": "String"
-					},
-					{
-						"name": "city",
-						"type": "String"
-					},
-					{
-						"name": "state",
-						"type": "String"
-					},
-					{
-						"name": "postalCode",
-						"type": "String"
-					},
-					{
-						"name": "country",
-						"type": "String"
-					},
-					{
-						"name": "email",
-						"type": "String"
-					},
-					{
-						"name": "workphone",
-						"type": "String"
-					},
-					{
-						"name": "homephone",
-						"type": "String"
-					},
-					{
-						"name": "mobilephone",
-						"type": "String"
-					},
-					{
-						"name": "extCustomerId",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
 			]
 		}
 	]

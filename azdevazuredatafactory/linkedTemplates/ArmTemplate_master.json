@@ -35,6 +35,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -100,6 +104,9 @@
 					"LS_ASQL_TGT_OLAP_connectionString": {
 						"value": "[parameters('LS_ASQL_TGT_OLAP_connectionString')]"
 					},
+					"LS_ABLB_MOMENTIVE_connectionString": {
+						"value": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
+					},
 					"LS_ADLS_properties_typeProperties_url": {
 						"value": "[parameters('LS_ADLS_properties_typeProperties_url')]"
 					},
@@ -108,12 +115,6 @@
 					},
 					"DS_ABLB_properties_typeProperties_folderPath": {
 						"value": "[parameters('DS_ABLB_properties_typeProperties_folderPath')]"
-					},
-					"ds_json_properties_typeProperties_fileName": {
-						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
-					},
-					"ds_json_properties_typeProperties_folderPath": {
-						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
 					}
 				}
 			},
@@ -135,11 +136,37 @@
 					},
 					"LS_ONPREMSQL_SOURCE_connectionString": {
 						"value": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+					},
+					"ds_json_properties_typeProperties_fileName": {
+						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"
+					},
+					"ds_json_properties_typeProperties_folderPath": {
+						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
 					}
 				}
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ArmTemplate_1')]"
 			]
 		}
 	]
