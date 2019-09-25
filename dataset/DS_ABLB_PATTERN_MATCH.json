@@ -20,7 +20,7 @@
 				"skipLineCount": 0,
 				"firstRowAsHeader": false
 			},
-			"fileName": "\"*.csv\"",
+			"fileName": "",
 			"folderPath": "publicrestapi/momentiveSource"
 		}
 	}
