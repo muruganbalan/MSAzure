@@ -16,8 +16,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "BlobSource",
-						"recursive": true
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						}
 					},
 					"sink": {
 						"type": "DelimitedTextSink",
@@ -34,7 +37,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_ABLB_PATTERN_MATCH",
+						"referenceName": "Binary1",
 						"type": "DatasetReference"
 					}
 				],
