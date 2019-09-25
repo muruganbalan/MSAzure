@@ -1,0 +1,18 @@
+{
+	"name": "Binary2_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_TRANSACTIONS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "prod_required_area",
+				"container": "publicrestapi"
+			}
+		}
+	}
+}
