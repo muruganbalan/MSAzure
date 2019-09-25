@@ -13,6 +13,7 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
+				"userProperties": [],
 				"typeProperties": {
 					"pythonFile": "dbfs:/mnt/mypath1/sample/pythonintegrationwithadf1.py",
 					"parameters": []
