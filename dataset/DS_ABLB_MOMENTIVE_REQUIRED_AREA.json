@@ -1,0 +1,22 @@
+{
+	"name": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_MOMENTIVE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@{IF(STARTSWITH(item().name,'e'),CONCAT('seq/',SUBSTRING(item().name,9,3),'/e/'),'false')}",
+					"type": "Expression"
+				},
+				"folderPath": "prodrequiredarea",
+				"container": "momentivesource"
+			}
+		}
+	}
+}
