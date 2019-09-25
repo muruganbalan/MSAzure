@@ -44,7 +44,7 @@
 				]
 			},
 			{
-				"name": "Get Metadata1",
+				"name": "GetMetadata",
 				"type": "GetMetadata",
 				"dependsOn": [
 					{
@@ -81,7 +81,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "GetMetadata",
 						"dependencyConditions": [
 							"Succeeded"
 						]
