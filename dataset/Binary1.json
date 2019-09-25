@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "momentiveSource",
+				"folderPath": "@item().name",
 				"container": "publicrestapi"
 			}
 		}
