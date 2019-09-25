@@ -11,7 +11,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@{IF(STARTSWITH(item().name,'e'),CONCAT('seq/',SUBSTRING(item().name,9,3),'/e/'),'false')}",
+					"value": "@{IF(STARTSWITH(item().name,'e'),CONCAT('seq/',SUBSTRING(item().name,9,3),'/e/item().name'),'false')}",
 					"type": "Expression"
 				},
 				"folderPath": "prodrequiredarea",
