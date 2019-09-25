@@ -1,0 +1,19 @@
+{
+	"name": "Binary1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_TRANSACTIONS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "\".csv\"",
+				"folderPath": "momentiveSource",
+				"container": "publicrestapi"
+			}
+		}
+	}
+}
