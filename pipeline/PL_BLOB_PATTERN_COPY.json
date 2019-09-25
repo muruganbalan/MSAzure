@@ -19,7 +19,9 @@
 						"type": "BinarySource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
+							"recursive": true,
+							"wildcardFolderPath": "momentiveSource",
+							"wildcardFileName": "\"*.csv\""
 						}
 					},
 					"sink": {
