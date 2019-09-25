@@ -1,0 +1,19 @@
+{
+	"name": "DS_ABLB_NEW_SOURCE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABLB_MOMENTIVE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "@item().name",
+				"folderPath": "prodrawarea",
+				"container": "momentivesource"
+			}
+		}
+	}
+}
