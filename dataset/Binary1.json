@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "\".pdf\"",
+				"fileName": "\"*.pdf\"",
 				"folderPath": "momentiveSource",
 				"container": "publicrestapi"
 			}
