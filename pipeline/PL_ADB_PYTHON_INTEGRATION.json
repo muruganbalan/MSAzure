@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "dbfs:/mnt/mypath1/sample/pythonintegrationwithadf1.py",
+					"pythonFile": "dbfs:/FileStore/tables/pythonintegrationwithadf.py",
 					"parameters": []
 				},
 				"linkedServiceName": {
