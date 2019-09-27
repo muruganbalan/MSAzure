@@ -1,0 +1,32 @@
+{
+	"name": "PL_ADB_NEW_PYTHON_INTEGRATION",
+	"properties": {
+		"activities": [
+			{
+				"name": "Python1",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/FileStore/tables/python_read_write.py",
+					"parameters": []
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ADB_CON",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Momentive"
+		},
+		"annotations": []
+	}
+}
