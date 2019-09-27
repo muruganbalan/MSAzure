@@ -1,9 +1,9 @@
 {
-	"name": "pipeline1",
+	"name": "PL_WEBSITE_DATA_PULL",
 	"properties": {
 		"activities": [
 			{
-				"name": "PL_WEBSITE_DATA_PULL",
+				"name": "webActivity",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
