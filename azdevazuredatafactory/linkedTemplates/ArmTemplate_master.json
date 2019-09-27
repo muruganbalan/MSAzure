@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"LS_ABLB_TRANSACTIONS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_TRANSACTIONS'"
@@ -35,10 +39,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
-		"LS_ABLB_MOMENTIVE_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
-		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -58,6 +58,10 @@
 		"LS_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://azdevadls.dfs.core.windows.net"
+		},
+		"Web1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.cognizant.com/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -89,6 +93,9 @@
 					"AzureBlobStorage1_connectionString": {
 						"value": "[parameters('AzureBlobStorage1_connectionString')]"
 					},
+					"LS_ABLB_MOMENTIVE_connectionString": {
+						"value": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
+					},
 					"LS_ABLB_TRANSACTIONS_connectionString": {
 						"value": "[parameters('LS_ABLB_TRANSACTIONS_connectionString')]"
 					},
@@ -103,9 +110,6 @@
 					},
 					"LS_ASQL_TGT_OLAP_connectionString": {
 						"value": "[parameters('LS_ASQL_TGT_OLAP_connectionString')]"
-					},
-					"LS_ABLB_MOMENTIVE_connectionString": {
-						"value": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
 					},
 					"LS_ADLS_properties_typeProperties_url": {
 						"value": "[parameters('LS_ADLS_properties_typeProperties_url')]"
@@ -142,6 +146,9 @@
 					},
 					"ds_json_properties_typeProperties_folderPath": {
 						"value": "[parameters('ds_json_properties_typeProperties_folderPath')]"
+					},
+					"Web1_properties_typeProperties_url": {
+						"value": "[parameters('Web1_properties_typeProperties_url')]"
 					}
 				}
 			},

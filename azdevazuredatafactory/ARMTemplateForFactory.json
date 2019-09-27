@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"LS_ABLB_TRANSACTIONS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_TRANSACTIONS'"
@@ -35,10 +39,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
-		"LS_ABLB_MOMENTIVE_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
-		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -58,12 +58,90 @@
 		"LS_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://azdevadls.dfs.core.windows.net"
+		},
+		"Web1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.cognizant.com/"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_NEW_PYTHON_INTEGRATION')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Python1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_read_write.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_INTEGRATION')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Python1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pythonintegrationwithadf.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/PL_COPY_WIZARD')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -585,6 +663,225 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_MOMENTIVE_CATEGORIZE_FILES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This pipeline is for connecting to the momentive source raw files (prod_raw_area) and split the source files according to the pattern we define into the prod_staging_area",
+				"activities": [
+					{
+						"name": "rawMetadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_PATTERN_NEW')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "rawMetadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copyPatternFiles",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ABLB_NEW_SOURCE",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_PROCESS_TRANSACTION')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1011,6 +1308,43 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_WEBSITE_DATA_PULL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "webActivity",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://www.cognizant.com/",
+							"method": "GET",
+							"headers": {},
+							"linkedServices": [
+								{
+									"referenceName": "Web1",
+									"type": "LinkedServiceReference"
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Web1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_WITH_DATA_FLOW')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1217,6 +1551,83 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "prod_landing_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_NEW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@item().name",
+							"type": "Expression"
+						},
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
 			]
 		},
 		{
@@ -2359,6 +2770,20 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LS_ABLB_TRANSACTIONS')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2444,6 +2869,26 @@
 				"type": "SqlServer",
 				"typeProperties": {
 					"connectionString": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "OnPremIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/OnPremIR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Web1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Web",
+				"typeProperties": {
+					"url": "[parameters('Web1_properties_typeProperties_url')]",
+					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
 					"referenceName": "OnPremIR",
@@ -2677,313 +3122,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_CUSTOMER')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SRC_CUSTOMER')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "prod_raw_area",
-						"container": "momentivesource"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_PATTERN_NEW')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "rawMetadata",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true
-							}
-						}
-					},
-					{
-						"name": "forEachRawFiles",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "rawMetadata",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('rawMetadata').output.childItems",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "copyPatternFiles",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "BinarySource",
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true
-											}
-										},
-										"sink": {
-											"type": "BinarySink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											}
-										},
-										"enableStaging": false
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_ABLB_NEW_SOURCE",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"folder": {
-					"name": "Momentive"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ABLB_NEW_SOURCE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "@item().name",
-						"folderPath": "prod_raw_area",
-						"container": "momentivesource"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
-							"type": "Expression"
-						},
-						"folderPath": "prod_landing_area",
-						"container": "momentivesource"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PL_MOMENTIVE_CATEGORIZE_FILES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This pipeline is for connecting to the momentive source raw files (prod_raw_area) and split the source files according to the pattern we define into the prod_staging_area",
-				"activities": [
-					{
-						"name": "rawMetadata",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "DS_ABLB_MOMENTIVE_RAW_SOURCE",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"recursive": true
-							}
-						}
-					},
-					{
-						"name": "forEachRawFiles",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "rawMetadata",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('rawMetadata').output.childItems",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "copyPatternFiles",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "BinarySource",
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true
-											}
-										},
-										"sink": {
-											"type": "BinarySink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											}
-										},
-										"enableStaging": false
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_ABLB_NEW_SOURCE",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_ABLB_MOMENTIVE_REQUIRED_AREA",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"folder": {
-					"name": "Momentive"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_NEW_SOURCE')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]"
 			]
 		}
 	]

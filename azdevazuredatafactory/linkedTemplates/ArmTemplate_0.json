@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
+		"LS_ABLB_MOMENTIVE_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
+		},
 		"LS_ABLB_TRANSACTIONS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_TRANSACTIONS'"
@@ -30,10 +34,6 @@
 		"LS_ASQL_TGT_OLAP_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_TGT_OLAP'"
-		},
-		"LS_ABLB_MOMENTIVE_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LS_ABLB_MOMENTIVE'"
 		},
 		"LS_ADLS_properties_typeProperties_url": {
 			"type": "string",
@@ -61,6 +61,20 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -177,18 +191,78 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_ABLB_MOMENTIVE')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_NEW_PYTHON_INTEGRATION')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "This linked service is for connecting to the momentive raw source files from blob storage.",
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ABLB_MOMENTIVE_connectionString')]"
-				}
+				"activities": [
+					{
+						"name": "Python1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_read_write.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_INTEGRATION')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Python1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pythonintegrationwithadf.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Binary1')]",
@@ -357,6 +431,83 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_RAW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_MOMENTIVE_REQUIRED_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "prod_landing_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ABLB_NEW_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@item().name",
+							"type": "Expression"
+						},
+						"folderPath": "prod_raw_area",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
 			]
 		},
 		{
@@ -626,317 +777,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_SRC_OLTP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_CUSTOMER')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NameStyle",
-						"type": "text"
-					},
-					{
-						"name": "Title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "FirstName",
-						"type": "text"
-					},
-					{
-						"name": "MiddleName",
-						"type": "text"
-					},
-					{
-						"name": "LastName",
-						"type": "text"
-					},
-					{
-						"name": "Suffix",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CompanyName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SalesPerson",
-						"type": "nvarchar"
-					},
-					{
-						"name": "EmailAddress",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Phone",
-						"type": "text"
-					},
-					{
-						"name": "PasswordHash",
-						"type": "varchar"
-					},
-					{
-						"name": "PasswordSalt",
-						"type": "varchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "InsertedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "UpdatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "HashKey",
-						"type": "text"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "dim_customer"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_CUSTOMERORDER')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "CustomerId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NumberOfOrders",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TotalAmount",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "CustomerOrders"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_OLAP')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "CustomerID",
-						"type": "int",
-						"precision": 10,
-						"scale": 0
-					},
-					{
-						"name": "AddressID",
-						"type": "int",
-						"precision": 10,
-						"scale": 0
-					},
-					{
-						"name": "AddressType",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "CustomerAddress"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ASQL_TGT_OLAP",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BusinessEntityID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "NationalIDNumber",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LoginID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "OrganizationNode",
-						"type": "tgt_olap.sys.hierarchyid"
-					},
-					{
-						"name": "OrganizationLevel",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "JobTitle",
-						"type": "nvarchar"
-					},
-					{
-						"name": "BirthDate",
-						"type": "date"
-					},
-					{
-						"name": "MaritalStatus",
-						"type": "nchar"
-					},
-					{
-						"name": "Gender",
-						"type": "nchar"
-					},
-					{
-						"name": "HireDate",
-						"type": "date"
-					},
-					{
-						"name": "SalariedFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VacationHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "SickLeaveHours",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "CurrentFlag",
-						"type": "nvarchar"
-					},
-					{
-						"name": "rowguid",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Employee"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_CSV_TRANSACTION')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_TRANSACTIONS",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Transactions.csv",
-						"folderPath": "sample",
-						"container": "publicrestapi"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
 			]
 		}
 	]
