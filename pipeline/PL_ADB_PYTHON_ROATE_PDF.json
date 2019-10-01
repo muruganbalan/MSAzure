@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Python1",
+				"name": "pythonActivity",
 				"type": "DatabricksSparkPython",
 				"dependsOn": [],
 				"policy": {
