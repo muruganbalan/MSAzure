@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "dbfs:/FileStore/tables/pdf_read_write.py",
+					"pythonFile": "dbfs:/FileStore/tables/pdf_read_rotate_write.py",
 					"parameters": []
 				},
 				"linkedServiceName": {
