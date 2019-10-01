@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "PL_AZURE_LOGICAPPS_INVOKE",
 	"properties": {
 		"activities": [
 			{
@@ -19,7 +19,8 @@
 					"method": "POST",
 					"headers": {
 						"Content-Type": "application/json"
-					}
+					},
+					"body": ""
 				}
 			}
 		],
