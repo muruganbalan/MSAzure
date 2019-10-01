@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "pythonActivity",
+				"name": "pythonActivityForRoatatePDF",
 				"type": "DatabricksSparkPython",
 				"dependsOn": [],
 				"policy": {
@@ -17,6 +17,26 @@
 				"typeProperties": {
 					"pythonFile": "dbfs:/FileStore/tables/pdf_read_rotate_write.py",
 					"parameters": []
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_ADB_CON",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "pythonActivityForReadText",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/FileStore/tables/pdf_extract_text.py"
 				},
 				"linkedServiceName": {
 					"referenceName": "LS_ADB_CON",
