@@ -21,7 +21,8 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"lastModified"
+						"lastModified",
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
