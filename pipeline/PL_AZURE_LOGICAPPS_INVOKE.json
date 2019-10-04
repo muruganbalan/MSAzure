@@ -17,7 +17,13 @@
 				"typeProperties": {
 					"url": "https://prod-05.centralus.logic.azure.com:443/workflows/4ae27e73e5c84027a5e58a3c338dec61/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZQqzV-cyAnfY0nzZiEW_VC5qddiz3k2ZOTUL7DCxaA4",
 					"method": "POST",
-					"body": "{\n    \"body\": {\n        \"myMessage\": \"Sample\",\n        \"datasets\": [{\n            \"name\": \"MyDataset1\",\n            \"properties\": {\n                ...\n            }\n        }],\n        \"linkedServices\": [{\n            \"name\": \"MyStorageLinkedService1\",\n            \"properties\": {\n                ...\n            }\n        }]\n    }\n}"
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"filename": "balan.csv",
+						"filepath": "ADFTraining"
+					}
 				}
 			}
 		],
