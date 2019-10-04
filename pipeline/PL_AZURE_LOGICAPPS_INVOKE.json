@@ -50,9 +50,7 @@
 						"referenceName": "DS_DEMO",
 						"type": "DatasetReference"
 					},
-					"fieldList": [
-						"childItems"
-					],
+					"fieldList": [],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true
@@ -107,7 +105,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "DS_DEMO",
+									"referenceName": "DS_DEMO_NEW",
 									"type": "DatasetReference"
 								}
 							],
