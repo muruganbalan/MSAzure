@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@item().name",
 				"folderPath": "demo",
 				"container": "momentivesource"
 			}
