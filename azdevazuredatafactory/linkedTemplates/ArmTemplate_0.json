@@ -4,7 +4,7 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Data Factory Name",
+			"metadata": "Data Factory name",
 			"defaultValue": "azdevazuredatafactory"
 		},
 		"AzureBlobStorage1_connectionString": {
@@ -191,43 +191,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_ADB_NEW_PYTHON_INTEGRATION')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Python1",
-						"type": "DatabricksSparkPython",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pythonFile": "dbfs:/FileStore/tables/pdf_read_write.py",
-							"parameters": []
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_ADB_CON",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"folder": {
-					"name": "Momentive"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_INTEGRATION')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -247,6 +210,64 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pythonFile": "dbfs:/FileStore/tables/pythonintegrationwithadf.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_ROATE_PDF')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "pythonActivityForRoatatePDF",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_read_rotate_write.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "pythonActivityForReadText",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_extract_text.py",
 							"parameters": []
 						},
 						"linkedServiceName": {

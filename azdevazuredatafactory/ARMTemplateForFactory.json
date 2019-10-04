@@ -4,7 +4,7 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Data Factory Name",
+			"metadata": "Data Factory name",
 			"defaultValue": "azdevazuredatafactory"
 		},
 		"AzureBlobStorage1_connectionString": {
@@ -69,43 +69,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_ADB_NEW_PYTHON_INTEGRATION')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Python1",
-						"type": "DatabricksSparkPython",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pythonFile": "dbfs:/FileStore/tables/pdf_read_write.py",
-							"parameters": []
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_ADB_CON",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"folder": {
-					"name": "Momentive"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_INTEGRATION')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -140,6 +103,232 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_ADB_PYTHON_ROATE_PDF')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "pythonActivityForRoatatePDF",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_read_rotate_write.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "pythonActivityForReadText",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/pdf_extract_text.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_AZURE_LOGICAPPS_INVOKE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "triggerLogicApps",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-05.centralus.logic.azure.com:443/workflows/4ae27e73e5c84027a5e58a3c338dec61/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZQqzV-cyAnfY0nzZiEW_VC5qddiz3k2ZOTUL7DCxaA4",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"filename": "balan.csv",
+								"filepath": "ADFTraining"
+							}
+						}
+					},
+					{
+						"name": "rawMetadata",
+						"type": "GetMetadata",
+						"dependsOn": [
+							{
+								"activity": "triggerLogicApps",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "DS_DEMO",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true
+							}
+						}
+					},
+					{
+						"name": "forEachRawFiles",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "rawMetadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('rawMetadata').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_DEMO_NEW",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_DEMO_LANDING_AREA",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "executeOCR",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "forEachRawFiles",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/FileStore/tables/demo.py"
+						},
+						"linkedServiceName": {
+							"referenceName": "LS_ADB_CON",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_DEMO')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADB_CON')]",
+				"[concat(variables('factoryId'), '/datasets/DS_DEMO_NEW')]",
+				"[concat(variables('factoryId'), '/datasets/DS_DEMO_LANDING_AREA')]"
 			]
 		},
 		{
@@ -688,6 +877,7 @@
 								"parameters": {}
 							},
 							"fieldList": [
+								"lastModified",
 								"childItems"
 							],
 							"storeSettings": {
@@ -3008,13 +3198,13 @@
 							"name": "AggCustomerOrders"
 						}
 					],
-					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customer\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tRevisionNumber as integer,\n\t\tOrderDate as timestamp,\n\t\tDueDate as timestamp,\n\t\tShipDate as timestamp,\n\t\tStatus as integer,\n\t\tOnlineOrderFlag as boolean,\n\t\tSalesOrderNumber as string,\n\t\tPurchaseOrderNumber as string,\n\t\tAccountNumber as string,\n\t\tCustomerID as integer,\n\t\tShipToAddressID as integer,\n\t\tBillToAddressID as integer,\n\t\tShipMethod as string,\n\t\tCreditCardApprovalCode as string,\n\t\tSubTotal as decimal(19,4),\n\t\tTaxAmt as decimal(19,4),\n\t\tFreight as decimal(19,4),\n\t\tTotalDue as decimal(19,4),\n\t\tComment as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SalesHeader\nCustomer, SalesHeader join(Customer@CustomerID == SalesHeader@CustomerID,\n\tjoinType:'left',\n\tbroadcast: 'none')~> CustomerVsSalesOrder\nCustomerVsSalesOrder aggregate(groupBy(Customer@CustomerID),\n\tNumberOfOrders = count(SalesOrderID),\n\t\tTotalOrderAmount = sum(TotalDue)) ~> AggCustomerOrders\nAggCustomerOrders sink(input(\n\t\tCustomerId as integer,\n\t\tNumberOfOrders as integer,\n\t\tTotalAmount as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tCustomerId = CustomerID,\n\t\tNumberOfOrders,\n\t\tTotalAmount = TotalOrderAmount\n\t)) ~> TargetSqlServer"
+					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Customer\nsource(output(\n\t\tSalesOrderID as integer,\n\t\tRevisionNumber as integer,\n\t\tOrderDate as timestamp,\n\t\tDueDate as timestamp,\n\t\tShipDate as timestamp,\n\t\tStatus as integer,\n\t\tOnlineOrderFlag as boolean,\n\t\tSalesOrderNumber as string,\n\t\tPurchaseOrderNumber as string,\n\t\tAccountNumber as string,\n\t\tCustomerID as integer,\n\t\tShipToAddressID as integer,\n\t\tBillToAddressID as integer,\n\t\tShipMethod as string,\n\t\tCreditCardApprovalCode as string,\n\t\tSubTotal as decimal(19,4),\n\t\tTaxAmt as decimal(19,4),\n\t\tFreight as decimal(19,4),\n\t\tTotalDue as decimal(19,4),\n\t\tComment as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SalesHeader\nCustomer, SalesHeader join(Customer@CustomerID == SalesHeader@CustomerID,\n\tjoinType:'left',\n\tbroadcast: 'none')~> CustomerVsSalesOrder\nCustomerVsSalesOrder aggregate(groupBy(Customer@CustomerID),\n\tNumberOfOrders = count(SalesOrderID),\n\t\tTotalOrderAmount = sum(TotalDue)) ~> AggCustomerOrders\nAggCustomerOrders sink(input(\n\t\tCustomerId as integer,\n\t\tNumberOfOrders as integer,\n\t\tTotalAmount as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tCustomerId = CustomerID,\n\t\tNumberOfOrders,\n\t\tTotalAmount = TotalOrderAmount\n\t)) ~> TargetSqlServer"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_CUSTOMERORDER')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SRC_CUSTOMER')]",
-				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SALESHEADER')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SALESHEADER')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_CUSTOMERORDER')]"
 			]
 		},
 		{
@@ -3061,8 +3251,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Rank_by_Month')]",
-				"[concat(variables('factoryId'), '/datasets/SalesData')]"
+				"[concat(variables('factoryId'), '/datasets/SalesData')]",
+				"[concat(variables('factoryId'), '/datasets/Rank_by_Month')]"
 			]
 		},
 		{
@@ -3116,12 +3306,86 @@
 							"name": "Upsert"
 						}
 					],
-					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlDimCustomer\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlSrcCustomer\nAzureSqlSrcCustomer derive(HashKey = sha1(FirstName+LastName+CompanyName)) ~> HashKey\nHashKey, AzureSqlDimCustomer exists(HashKey@HashKey == AzureSqlDimCustomer@HashKey,\n\tnegate:true,\n\tbroadcast: 'none')~> RecordExists\nRecordExists, AzureSqlDimCustomer lookup(AzureSqlSrcCustomer@CustomerID == AzureSqlDimCustomer@CustomerID,\n\tbroadcast: 'none')~> LkpCustomer\nLkpCustomer derive(InsertedDate = iif(isNull(InsertedDate),currentTimestamp(),{InsertedDate}),\n\t\tUpdatedDate = currentTimestamp()) ~> CreateAuditColumns\nCreateAuditColumns alterRow(upsertIf(true())) ~> Upsert\nUpsert sink(input(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['CustomerID'],\n\tmapColumn(\n\t\tCustomerID = AzureSqlSrcCustomer@CustomerID,\n\t\tNameStyle = AzureSqlSrcCustomer@NameStyle,\n\t\tTitle = AzureSqlSrcCustomer@Title,\n\t\tFirstName = AzureSqlSrcCustomer@FirstName,\n\t\tMiddleName = AzureSqlSrcCustomer@MiddleName,\n\t\tLastName = AzureSqlSrcCustomer@LastName,\n\t\tSuffix = AzureSqlSrcCustomer@Suffix,\n\t\tCompanyName = AzureSqlSrcCustomer@CompanyName,\n\t\tSalesPerson = AzureSqlSrcCustomer@SalesPerson,\n\t\tEmailAddress = AzureSqlSrcCustomer@EmailAddress,\n\t\tPhone = AzureSqlSrcCustomer@Phone,\n\t\tPasswordHash = AzureSqlSrcCustomer@PasswordHash,\n\t\tPasswordSalt = AzureSqlSrcCustomer@PasswordSalt,\n\t\trowguid = AzureSqlSrcCustomer@rowguid,\n\t\tInsertedDate,\n\t\tUpdatedDate,\n\t\tHashKey = HashKey@HashKey\n\t)) ~> AzureSqlTgtTable"
+					"script": "\n\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlDimCustomer\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlSrcCustomer\nAzureSqlSrcCustomer derive(HashKey = sha1(FirstName+LastName+CompanyName)) ~> HashKey\nHashKey, AzureSqlDimCustomer exists(HashKey@HashKey == AzureSqlDimCustomer@HashKey,\n\tnegate:true,\n\tbroadcast: 'none')~> RecordExists\nRecordExists, AzureSqlDimCustomer lookup(AzureSqlSrcCustomer@CustomerID == AzureSqlDimCustomer@CustomerID,\n\tbroadcast: 'none')~> LkpCustomer\nLkpCustomer derive(InsertedDate = iif(isNull(InsertedDate),currentTimestamp(),{InsertedDate}),\n\t\tUpdatedDate = currentTimestamp()) ~> CreateAuditColumns\nCreateAuditColumns alterRow(upsertIf(true())) ~> Upsert\nUpsert sink(input(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tformat: 'table',\n\tkeys:['CustomerID'],\n\tmapColumn(\n\t\tCustomerID = AzureSqlSrcCustomer@CustomerID,\n\t\tNameStyle = AzureSqlSrcCustomer@NameStyle,\n\t\tTitle = AzureSqlSrcCustomer@Title,\n\t\tFirstName = AzureSqlSrcCustomer@FirstName,\n\t\tMiddleName = AzureSqlSrcCustomer@MiddleName,\n\t\tLastName = AzureSqlSrcCustomer@LastName,\n\t\tSuffix = AzureSqlSrcCustomer@Suffix,\n\t\tCompanyName = AzureSqlSrcCustomer@CompanyName,\n\t\tSalesPerson = AzureSqlSrcCustomer@SalesPerson,\n\t\tEmailAddress = AzureSqlSrcCustomer@EmailAddress,\n\t\tPhone = AzureSqlSrcCustomer@Phone,\n\t\tPasswordHash = AzureSqlSrcCustomer@PasswordHash,\n\t\tPasswordSalt = AzureSqlSrcCustomer@PasswordSalt,\n\t\trowguid = AzureSqlSrcCustomer@rowguid,\n\t\tInsertedDate,\n\t\tUpdatedDate,\n\t\tHashKey = HashKey@HashKey\n\t)) ~> AzureSqlTgtTable"
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_CUSTOMER')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ASQL_SRC_CUSTOMER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO_LANDING_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO_NEW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "@item().name",
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
 			]
 		}
 	]

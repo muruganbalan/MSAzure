@@ -4,7 +4,7 @@
 	"parameters": {
 		"factoryName": {
 			"type": "string",
-			"metadata": "Data Factory Name",
+			"metadata": "Data Factory name",
 			"defaultValue": "azdevazuredatafactory"
 		},
 		"AzureBlobStorage1_connectionString": {
@@ -69,7 +69,7 @@
 		},
 		"containerSasToken": {
 			"type": "string",
-			"metadata": "Sas Token to storage account containing linked ARM templates"
+			"metadata": "Sas token to storage account containing linked ARM templates"
 		}
 	},
 	"variables": {
