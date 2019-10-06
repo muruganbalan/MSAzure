@@ -247,8 +247,8 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "SqlServerSource",
-									"sqlReaderQuery": {
+									"type": "PostgreSqlSource",
+									"query": {
 										"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_PG').output.firstRow.MAXD}' as DATE)",
 										"type": "Expression"
 									}
@@ -261,7 +261,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "DS_ONPREM_SQLSERVER",
+									"referenceName": "DS_ONPREM_POSTGRES",
 									"type": "DatasetReference"
 								}
 							],
