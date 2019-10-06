@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "GET CFG",
+				"name": "GET_CFG",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -33,7 +33,7 @@
 				"type": "Filter",
 				"dependsOn": [
 					{
-						"activity": "GET CFG",
+						"activity": "GET_CFG",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -42,7 +42,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GET CFG').output.value",
+						"value": "@activity('GET_CFG').output.value",
 						"type": "Expression"
 					},
 					"condition": {
@@ -56,7 +56,7 @@
 				"type": "Filter",
 				"dependsOn": [
 					{
-						"activity": "GET CFG",
+						"activity": "GET_CFG",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -65,7 +65,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GET CFG').output.value",
+						"value": "@activity('GET_CFG').output.value",
 						"type": "Expression"
 					},
 					"condition": {
@@ -73,6 +73,18 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": []
+			},
+			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": []
 			}
 		],
 		"parameters": {
