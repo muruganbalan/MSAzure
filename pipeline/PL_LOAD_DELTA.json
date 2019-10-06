@@ -27,6 +27,52 @@
 						}
 					}
 				}
+			},
+			{
+				"name": "SQL_CFG",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "GET CFG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GET CFG').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().SRC_name,'ORA')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "PG_CFG",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "GET CFG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GET CFG').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().SRC_name,'PG')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
