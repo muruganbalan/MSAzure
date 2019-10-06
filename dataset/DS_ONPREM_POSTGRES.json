@@ -1,0 +1,16 @@
+{
+	"name": "DS_ONPREM_POSTGRES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ONPREM_POSTGRES",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "PostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "actor"
+		}
+	}
+}
