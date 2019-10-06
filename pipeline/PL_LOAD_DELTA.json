@@ -43,7 +43,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GET_CFG').output",
+						"value": "@activity('GET_CFG').output.value",
 						"type": "Expression"
 					},
 					"activities": [
