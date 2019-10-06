@@ -93,7 +93,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\n@{item().WatermarkColumn} > \nCONVERT('@{item().WatermarkValue}', 'YYYY-MM-DD HH24:MI:SS')\nAND\n@{item().WatermarkColumn} <=\nCONVERT('@{activity('GET_MAX_SQL').output.firstRow.MAXD}', 'YYYY-MM-DD HH24:MI:SS')",
+										"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\n@{item().WatermarkColumn} > \nCONVERT('@{item().WatermarkValue}', 'YYYY-MM-DDTHH24:MI:SS')\nAND\n@{item().WatermarkColumn} <=\nCONVERT('@{activity('GET_MAX_SQL').output.firstRow.MAXD}', 'YYYY-MM-DDTHH24:MI:SS')",
 										"type": "Expression"
 									}
 								},
