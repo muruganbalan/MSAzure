@@ -17,7 +17,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT * from @{pipeline().parameters.ConfigTable}\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1"
+						"sqlReaderQuery": {
+							"value": "SELECT * from @{pipeline().parameters.ConfigTable}\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1",
+							"type": "Expression"
+						}
 					},
 					"dataset": {
 						"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
@@ -62,7 +65,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
-									"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+									"sqlReaderQuery": {
+										"value": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}",
+										"type": "Expression"
+									}
 								},
 								"dataset": {
 									"referenceName": "DS_ONPREM_SQLSERVER",
@@ -99,6 +105,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
+									"preCopyScript": "TRUNCATE TABLE @{item().DST_tab}",
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false
@@ -145,11 +152,17 @@
 								"storedProcedureName": "[dbo].[usp_UpdateWatermark]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@{item().id}",
+										"value": {
+											"value": "@{item().id}",
+											"type": "Expression"
+										},
 										"type": "Int16"
 									},
 									"NewWatermark": {
-										"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+										"value": {
+											"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+											"type": "Expression"
+										},
 										"type": "DateTime"
 									}
 								}
@@ -218,7 +231,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "PostgreSqlSource",
-									"query": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+									"query": {
+										"value": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}",
+										"type": "Expression"
+									}
 								},
 								"dataset": {
 									"referenceName": "DS_ONPREM_POSTGRES",
@@ -301,11 +317,17 @@
 								"storedProcedureName": "[dbo].[usp_UpdateWatermark]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@{item().id}",
+										"value": {
+											"value": "@{item().id}",
+											"type": "Expression"
+										},
 										"type": "Int16"
 									},
 									"NewWatermark": {
-										"value": "@{activity('GET_MAX_PG').output.firstRow.MAXD}",
+										"value": {
+											"value": "@{activity('GET_MAX_PG').output.firstRow.MAXD}",
+											"type": "Expression"
+										},
 										"type": "DateTime"
 									}
 								}
