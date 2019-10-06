@@ -142,12 +142,27 @@
 										"type": "Expression"
 									}
 								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
 								"enableStaging": false
 							},
 							"inputs": [
 								{
 									"referenceName": "DS_ONPREM_SQLSERVER",
 									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": {
+											"value": "@{item().DST_tab}",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
