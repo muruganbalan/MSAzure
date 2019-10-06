@@ -99,10 +99,6 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
-									"preCopyScript": {
-										"value": "TRUNCATE TABLE @{item().DST_tab}",
-										"type": "Expression"
-									},
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false
