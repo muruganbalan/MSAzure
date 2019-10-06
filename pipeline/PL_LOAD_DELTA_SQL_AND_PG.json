@@ -180,7 +180,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@equals(item().SRC_name,'SQLS')",
+						"value": "@equals(item().SRC_name,'SQL')",
 						"type": "Expression"
 					}
 				}
