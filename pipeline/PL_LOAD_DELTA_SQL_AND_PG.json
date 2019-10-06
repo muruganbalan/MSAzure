@@ -217,11 +217,11 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "SqlServerSource",
-									"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+									"type": "PostgreSqlSource",
+									"query": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
 								},
 								"dataset": {
-									"referenceName": "DS_ONPREM_SQLSERVER",
+									"referenceName": "DS_ONPREM_POSTGRES",
 									"type": "DatasetReference"
 								}
 							}
