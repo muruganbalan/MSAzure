@@ -249,7 +249,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_SQL').output.firstRow.MAXD}' as DATE)",
+										"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_PG').output.firstRow.MAXD}' as DATE)",
 										"type": "Expression"
 									}
 								},
@@ -305,7 +305,7 @@
 										"type": "Int16"
 									},
 									"NewWatermark": {
-										"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+										"value": "@{activity('GET_MAX_PG').output.firstRow.MAXD}",
 										"type": "DateTime"
 									}
 								}
