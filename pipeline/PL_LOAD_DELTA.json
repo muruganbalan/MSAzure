@@ -189,7 +189,24 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[usp_UpdateWatermark]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": "@{item().id}",
+										"type": "Int16"
+									},
+									"NewWatermark": {
+										"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+										"type": "DateTime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_ASQL_TGT_OLAP",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
