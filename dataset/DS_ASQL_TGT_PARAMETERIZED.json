@@ -16,7 +16,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": {
-				"value": "Table",
+				"value": "dbo.",
 				"type": "Expression"
 			},
 			"table": {
