@@ -39,6 +39,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
+		"LS_ONPREM_POSTGRES_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ONPREM_POSTGRES'"
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -140,6 +144,9 @@
 					},
 					"LS_ONPREMSQL_SOURCE_connectionString": {
 						"value": "[parameters('LS_ONPREMSQL_SOURCE_connectionString')]"
+					},
+					"LS_ONPREM_POSTGRES_connectionString": {
+						"value": "[parameters('LS_ONPREM_POSTGRES_connectionString')]"
 					},
 					"ds_json_properties_typeProperties_fileName": {
 						"value": "[parameters('ds_json_properties_typeProperties_fileName')]"

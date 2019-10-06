@@ -39,6 +39,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_ONPREMSQL_SOURCE'"
 		},
+		"LS_ONPREM_POSTGRES_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ONPREM_POSTGRES'"
+		},
 		"DS_ABLB_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "Transaction.json"
@@ -311,7 +315,8 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"pythonFile": "dbfs:/FileStore/tables/demo.py"
+							"pythonFile": "dbfs:/FileStore/tables/demo.py",
+							"parameters": []
 						},
 						"linkedServiceName": {
 							"referenceName": "LS_ADB_CON",
@@ -2280,6 +2285,39 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PARAMETERIZED')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_TGT_OLAP",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string",
+						"defaultValue": "dummy"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "dbo",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_ASQL_TGT_PLAP_EMPLOYEE')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2401,6 +2439,83 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO_LANDING_AREA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
+							"type": "Expression"
+						},
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DEMO_NEW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABLB_MOMENTIVE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@item().name",
+							"type": "Expression"
+						},
+						"folderPath": "demo",
+						"container": "momentivesource"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_MOMENTIVE_TGT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2441,6 +2556,98 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_TRANSACTIONS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ONPREM_SQLSERVER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ONPREMSQL_SOURCE",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "BusinessEntityID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NationalIDNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LoginID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "OrganizationNode",
+						"type": "AdventureWorks2012.sys.hierarchyid"
+					},
+					{
+						"name": "OrganizationLevel",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "JobTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BirthDate",
+						"type": "date"
+					},
+					{
+						"name": "MaritalStatus",
+						"type": "nchar"
+					},
+					{
+						"name": "Gender",
+						"type": "nchar"
+					},
+					{
+						"name": "HireDate",
+						"type": "date"
+					},
+					{
+						"name": "SalariedFlag",
+						"type": "bit"
+					},
+					{
+						"name": "VacationHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "SickLeaveHours",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "CurrentFlag",
+						"type": "bit"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "HumanResources",
+					"table": "Employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ONPREMSQL_SOURCE')]"
 			]
 		},
 		{
@@ -3070,6 +3277,25 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LS_ONPREM_POSTGRES')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "PostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ONPREM_POSTGRES_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "OnPremIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/OnPremIR')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Web1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -3315,77 +3541,578 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_DEMO')]",
+			"name": "[concat(parameters('factoryName'), '/DS_ONPREM_POSTGRES')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
+					"referenceName": "LS_ONPREM_POSTGRES",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Binary",
+				"type": "PostgreSqlTable",
+				"schema": [],
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "demo",
-						"container": "momentivesource"
-					}
+					"schema": "public",
+					"table": "actor"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_ONPREM_POSTGRES')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_DEMO_LANDING_AREA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/PL_LOAD_DELTA')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
-							"type": "Expression"
+				"activities": [
+					{
+						"name": "GET_CFG",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"folderPath": "demo",
-						"container": "momentivesource"
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * from @{pipeline().parameters.ConfigTable}\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1"
+							},
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "dummy"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "FOR_EACH_SQL",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GET_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GET_CFG').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "GET_MAX_SQL",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+										},
+										"dataset": {
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "COPY SQL",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "GET_MAX_SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": {
+												"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_SQL').output.firstRow.MAXD}' as DATE)",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": {
+													"value": "@{item().DST_tab}",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "UPDATE_WATERMARK_SQL",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_UpdateWatermark]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@{item().id}",
+												"type": "Int16"
+											},
+											"NewWatermark": {
+												"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_ASQL_TGT_OLAP",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
 					}
-				}
+				],
+				"parameters": {
+					"ConfigTable": {
+						"type": "string",
+						"defaultValue": "dbo.cfg"
+					}
+				},
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_PARAMETERIZED')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_SQLSERVER')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_DEMO_NEW')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/PL_LOAD_DELTA_SQL_AND_PG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_ABLB_MOMENTIVE",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "@item().name",
-						"folderPath": "demo",
-						"container": "momentivesource"
+				"activities": [
+					{
+						"name": "GET_CFG",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * from @{pipeline().parameters.ConfigTable}\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1"
+							},
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "dummy"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "FOR_EACH_SQL",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "SQL_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('SQL_CFG').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "GET_MAX_SQL",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+										},
+										"dataset": {
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "COPY SQL",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "GET_MAX_SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": {
+												"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_SQL').output.firstRow.MAXD}' as DATE)",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": {
+													"value": "@{item().DST_tab}",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "UPDATE_WATERMARK_SQL",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_UpdateWatermark]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@{item().id}",
+												"type": "Int16"
+											},
+											"NewWatermark": {
+												"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_ASQL_TGT_OLAP",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "SQL_CFG",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "GET_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GET_CFG').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().SRC_name,'SQLS')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "FOR_EACH_PG",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "PG_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('PG_CFG').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "GET_MAX_PG",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "PostgreSqlSource",
+											"query": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+										},
+										"dataset": {
+											"referenceName": "DS_ONPREM_POSTGRES",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "COPY_PG_SQL",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "GET_MAX_PG",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "PostgreSqlSource",
+											"query": {
+												"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_PG').output.firstRow.MAXD}' as DATE)",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ONPREM_POSTGRES",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": {
+													"value": "@{item().DST_tab}",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "UPDATE_WATERMARK_PG_SQL",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY_PG_SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_UpdateWatermark]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@{item().id}",
+												"type": "Int16"
+											},
+											"NewWatermark": {
+												"value": "@{activity('GET_MAX_PG').output.firstRow.MAXD}",
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_ASQL_TGT_OLAP",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "PG_CFG",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "GET_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GET_CFG').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().SRC_name,'PG')",
+								"type": "Expression"
+							}
+						}
 					}
-				}
+				],
+				"parameters": {
+					"ConfigTable": {
+						"type": "string",
+						"defaultValue": "dbo.cfg"
+					}
+				},
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_ABLB_MOMENTIVE')]"
+				"[concat(variables('factoryId'), '/datasets/DS_ASQL_TGT_PARAMETERIZED')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_SQLSERVER')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_TGT_OLAP')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ONPREM_POSTGRES')]"
 			]
 		}
 	]
