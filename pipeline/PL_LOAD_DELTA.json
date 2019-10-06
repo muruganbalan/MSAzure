@@ -62,7 +62,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
-									"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn}) as date) as maxd FROM @{item().SRC_tab}"
+									"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
 								},
 								"dataset": {
 									"referenceName": "DS_ONPREM_SQLSERVER",
