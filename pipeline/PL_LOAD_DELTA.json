@@ -77,14 +77,40 @@
 			{
 				"name": "FOR_EACH_SQL",
 				"type": "ForEach",
-				"dependsOn": [],
-				"userProperties": []
+				"dependsOn": [
+					{
+						"activity": "SQL_CFG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('sql_CFG').output.value",
+						"type": "Expression"
+					}
+				}
 			},
 			{
 				"name": "FOR_EACH_PG",
 				"type": "ForEach",
-				"dependsOn": [],
-				"userProperties": []
+				"dependsOn": [
+					{
+						"activity": "PG_CFG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('PG_CFG').output.value",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
