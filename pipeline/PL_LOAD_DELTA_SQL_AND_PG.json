@@ -271,6 +271,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
+									"preCopyScript": "TRUNCATE TABLE @{item().DST_tab}",
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false
