@@ -1,6 +1,12 @@
 {
 	"name": "PL_LOAD_DELTA",
 	"properties": {
+		"parameters": {
+			"ConfigTable": {
+				"type": "string",
+				"defaultValue": "dbo.config"
+			}
+		},
 		"folder": {
 			"name": "Momentive"
 		},
