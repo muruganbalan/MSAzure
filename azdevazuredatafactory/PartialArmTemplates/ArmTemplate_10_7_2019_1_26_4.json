@@ -1,0 +1,375 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "azdevazuredatafactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_LOAD_DELTA_SQL_AND_PG')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "GET_CFG",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * from @{pipeline().parameters.ConfigTable}\nIF @@ROWCOUNT = 0 THROW 50000,'No rows in configuration table!',1"
+							},
+							"dataset": {
+								"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "dummy"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "FOR_EACH_SQL",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "SQL_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('SQL_CFG').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "GET_MAX_SQL",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+										},
+										"dataset": {
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference"
+										}
+									}
+								},
+								{
+									"name": "COPY SQL",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "GET_MAX_SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": {
+												"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_SQL').output.firstRow.MAXD}' as DATE)",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ONPREM_SQLSERVER",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": {
+													"value": "@{item().DST_tab}",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "UPDATE_WATERMARK_SQL",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_UpdateWatermark]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@{item().id}",
+												"type": "Int16"
+											},
+											"NewWatermark": {
+												"value": "@{activity('GET_MAX_SQL').output.firstRow.MAXD}",
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_ASQL_TGT_OLAP",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "SQL_CFG",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "GET_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GET_CFG').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().SRC_name,'SQL')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "FOR_EACH_PG",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "PG_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('PG_CFG').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "GET_MAX_PG",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "PostgreSqlSource",
+											"query": "SELECT MAX(CAST(@{item().WatermarkColumn} as date)) as maxd FROM @{item().SRC_tab}"
+										},
+										"dataset": {
+											"referenceName": "DS_ONPREM_POSTGRES",
+											"type": "DatasetReference"
+										}
+									}
+								},
+								{
+									"name": "COPY_PG_SQL",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "GET_MAX_PG",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "PostgreSqlSource",
+											"query": {
+												"value": "SELECT \n @{item().Cols} FROM @{item().SRC_tab} \n \nWHERE \n\nCAST(@{item().WatermarkColumn} as DATE) > \nCAST('@{item().WatermarkValue}' as DATE)\nAND\nCAST(@{item().WatermarkColumn} as DATE) <=\nCAST('@{activity('GET_MAX_PG').output.firstRow.MAXD}' as DATE)",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ONPREM_POSTGRES",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ASQL_TGT_PARAMETERIZED",
+											"type": "DatasetReference",
+											"parameters": {
+												"TableName": {
+													"value": "@{item().DST_tab}",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "UPDATE_WATERMARK_PG_SQL",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY_PG_SQL",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_UpdateWatermark]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@{item().id}",
+												"type": "Int16"
+											},
+											"NewWatermark": {
+												"value": "@{activity('GET_MAX_PG').output.firstRow.MAXD}",
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_ASQL_TGT_OLAP",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "PG_CFG",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "GET_CFG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GET_CFG').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().SRC_name,'PG')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"ConfigTable": {
+						"type": "string",
+						"defaultValue": "dbo.cfg"
+					}
+				},
+				"folder": {
+					"name": "Momentive"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
