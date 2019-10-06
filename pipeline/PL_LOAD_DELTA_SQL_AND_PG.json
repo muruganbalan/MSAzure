@@ -227,7 +227,7 @@
 							}
 						},
 						{
-							"name": "COPY_SQL",
+							"name": "COPY_PG_SQL",
 							"type": "Copy",
 							"dependsOn": [
 								{
@@ -279,11 +279,11 @@
 							]
 						},
 						{
-							"name": "UPDATE_WATERMARK_SQL",
+							"name": "UPDATE_WATERMARK_PG_SQL",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "COPY_SQL",
+									"activity": "COPY_PG_SQL",
 									"dependencyConditions": [
 										"Succeeded"
 									]
