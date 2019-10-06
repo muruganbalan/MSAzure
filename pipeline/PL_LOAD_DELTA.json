@@ -25,7 +25,8 @@
 						"parameters": {
 							"TableName": "dummy"
 						}
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -42,7 +43,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('GET_CFG').output.value",
+						"value": "@activity('GET_CFG').output",
 						"type": "Expression"
 					},
 					"activities": [
