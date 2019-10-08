@@ -78,7 +78,7 @@
 					},
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "categorizeFiles",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -141,7 +141,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "dbfs:/FileStore/tables/demo.py"
+					"pythonFile": "dbfs:/FileStore/tables/demo.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "LS_ADB_CON",
