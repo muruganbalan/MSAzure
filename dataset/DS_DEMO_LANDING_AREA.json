@@ -14,7 +14,7 @@
 					"value": "@{IF(endswith(item().name,'.pdf'),CONCAT('pdf_source/',item().name),\n          IF(endswith(item().name,'.csv'),CONCAT('csv_source/',item().name),\n\t\t  IF(endswith(item().name,'.ppt'),CONCAT('powerpoint_source/',item().name),\n                    IF(endswith(item().name,'.doc'),CONCAT('document_source/',item().name),'fail'\n                              )\n                    )\n\t\t\t\t\t)\n          )\n}",
 					"type": "Expression"
 				},
-				"folderPath": "demo",
+				"folderPath": "prod_raw_area",
 				"container": "momentivesource"
 			}
 		}
