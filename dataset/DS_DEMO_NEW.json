@@ -10,8 +10,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@item().name",
-				"folderPath": "demo",
+				"fileName": {
+					"value": "@item().name",
+					"type": "Expression"
+				},
+				"folderPath": "prod_raw_area",
 				"container": "momentivesource"
 			}
 		}
