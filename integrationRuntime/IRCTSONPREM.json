@@ -1,0 +1,7 @@
+{
+	"name": "IRCTSONPREM",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "This integration run time is for CKC SDB 1 my system."
+	}
+}
