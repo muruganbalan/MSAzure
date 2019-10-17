@@ -1,6 +1,9 @@
 {
 	"name": "PL_SAP_TABLE_CONNECTOR",
 	"properties": {
+		"folder": {
+			"name": "Momentive"
+		},
 		"annotations": []
 	}
 }
