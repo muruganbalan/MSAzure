@@ -1,0 +1,8 @@
+{
+	"name": "DS_SAPCTS_SAMPLEDATA",
+	"properties": {
+		"annotations": [],
+		"type": "SapTableResource",
+		"schema": []
+	}
+}
