@@ -1,6 +1,10 @@
 {
 	"name": "DS_SAPCTS_SAMPLEDATA",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SapTable1",
+			"type": "LinkedServiceReference"
+		},
 		"annotations": [],
 		"type": "SapTableResource",
 		"schema": []
