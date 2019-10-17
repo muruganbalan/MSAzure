@@ -15,8 +15,18 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "SapTableSource",
+						"partitionOption": "None"
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SAPCTS_SAMPLEDATA",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"folder": {
