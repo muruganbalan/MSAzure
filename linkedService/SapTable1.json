@@ -1,0 +1,21 @@
+{
+	"name": "SapTable1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SapTable",
+		"typeProperties": {
+			"clientId": "200",
+			"language": "",
+			"sncMode": false,
+			"userName": "802943",
+			"server": "CTSINTBMVSG1A",
+			"systemNumber": "10.242.250.246",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhZDI0ZjhiMC0wOTY5LTQ1NzYtODcxZi1mZGQ0MGFlMzhlN2EiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "OnPremIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
