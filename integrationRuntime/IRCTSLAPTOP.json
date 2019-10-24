@@ -1,0 +1,7 @@
+{
+	"name": "IRCTSLAPTOP",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "CTS laptop Data Gateway SHIR"
+	}
+}
