@@ -74,7 +74,7 @@
 		],
 		"typeProperties": {
 			"schema": "SalesLT",
-			"table": "Customer"
+			"table": "Customer_Input"
 		}
 	}
 }
