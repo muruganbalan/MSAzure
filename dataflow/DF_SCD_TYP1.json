@@ -6,13 +6,6 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_ASQL_TGT_CUSTOMER",
-						"type": "DatasetReference"
-					},
-					"name": "olatgt"
-				},
-				{
-					"dataset": {
 						"referenceName": "DS_ASQL_SRC_CUSTOMER",
 						"type": "DatasetReference"
 					},
@@ -32,10 +25,10 @@
 					"name": "createHash"
 				},
 				{
-					"name": "existsInolap"
+					"name": "existsInOlap"
 				}
 			],
-			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> AzureSqlDimCustomer\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> oltpsrc\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as string,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp,\n\t\tInsertedDate as timestamp,\n\t\tUpdatedDate as timestamp,\n\t\tHashKey as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt\noltpsrc derive(DWHash = sha2(256, age+phone)) ~> createHash\ncreateHash, AzureSqlDimCustomer exists(DWHash == ERROR_FUNCTION(''),\n\tnegate:true,\n\tbroadcast: 'none')~> existsInolap"
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt\noltpsrc derive(DWHash = sha2(256, age+phone)) ~> createHash\ncreateHash, olaptgt exists(createHash@DWHash == olaptgt@DWHash,\n\tnegate:false,\n\tbroadcast: 'none')~> existsInOlap"
 		}
 	}
 }
