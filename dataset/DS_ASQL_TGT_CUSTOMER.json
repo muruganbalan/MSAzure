@@ -9,83 +9,43 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "CustomerID",
+				"name": "id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "NameStyle",
-				"type": "text"
-			},
-			{
-				"name": "Title",
-				"type": "nvarchar"
-			},
-			{
-				"name": "FirstName",
-				"type": "text"
-			},
-			{
-				"name": "MiddleName",
-				"type": "text"
-			},
-			{
-				"name": "LastName",
-				"type": "text"
-			},
-			{
-				"name": "Suffix",
-				"type": "nvarchar"
-			},
-			{
-				"name": "CompanyName",
-				"type": "nvarchar"
-			},
-			{
-				"name": "SalesPerson",
-				"type": "nvarchar"
-			},
-			{
-				"name": "EmailAddress",
-				"type": "nvarchar"
-			},
-			{
-				"name": "Phone",
-				"type": "text"
-			},
-			{
-				"name": "PasswordHash",
+				"name": "name",
 				"type": "varchar"
 			},
 			{
-				"name": "PasswordSalt",
+				"name": "age",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "address",
 				"type": "varchar"
 			},
 			{
-				"name": "rowguid",
-				"type": "uniqueidentifier"
+				"name": "phone",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "ModifiedDate",
+				"name": "_Inserted",
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
 			},
 			{
-				"name": "InsertedDate",
+				"name": "_LastUpdated",
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3
 			},
 			{
-				"name": "UpdatedDate",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
-				"name": "HashKey",
-				"type": "text"
+				"name": "DWHash",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {

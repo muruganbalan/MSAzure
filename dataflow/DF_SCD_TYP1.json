@@ -19,7 +19,15 @@
 					"name": "olaptgt"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_TGT_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "createHash"
@@ -37,7 +45,7 @@
 					"name": "alterrow"
 				}
 			],
-			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt\noltpsrc derive(DWHash = sha2(256, age+phone)) ~> createHash\ncreateHash, olaptgt exists(createHash@DWHash == olaptgt@DWHash,\n\tnegate:false,\n\tbroadcast: 'none')~> existsInOlap\nexistsInOlap, olaptgt lookup(oltpsrc@id == olaptgt@id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'none')~> lkpOlap\nlkpOlap derive(Inserted = iif(isNull({_Inserted}),currentTimestamp(),{_Inserted}),\n\t\tUpdated = iif(isNull({_LastUpdated}),currentTimestamp(),{_LastUpdated})) ~> addAuditColumns\naddAuditColumns alterRow(updateIf(true())) ~> alterrow"
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt\noltpsrc derive(DWHash = sha2(256, age+phone)) ~> createHash\ncreateHash, olaptgt exists(createHash@DWHash == olaptgt@DWHash,\n\tnegate:false,\n\tbroadcast: 'none')~> existsInOlap\nexistsInOlap, olaptgt lookup(oltpsrc@id == olaptgt@id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'none')~> lkpOlap\nlkpOlap derive(Inserted = iif(isNull({_Inserted}),currentTimestamp(),{_Inserted}),\n\t\tUpdated = iif(isNull({_LastUpdated}),currentTimestamp(),{_LastUpdated})) ~> addAuditColumns\naddAuditColumns alterRow(updateIf(true())) ~> alterrow\nalterrow sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
