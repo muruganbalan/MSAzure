@@ -10,18 +10,11 @@
 						"type": "DatasetReference"
 					},
 					"name": "oltpsrc"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_ASQL_TGT_CUSTOMER",
-						"type": "DatasetReference"
-					},
-					"name": "olaptgt"
 				}
 			],
 			"sinks": [],
 			"transformations": [],
-			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tdateFormats: ['dd/MM/yyyy'],\n\ttimestampFormats: ['MM/dd/yyyy HH:mm:ss'],\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt"
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tdateFormats: ['dd/MM/yyyy'],\n\ttimestampFormats: ['MM/dd/yyyy HH:mm:ss'],\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal') ~> oltpsrc"
 		}
 	}
 }
