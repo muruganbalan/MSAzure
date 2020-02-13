@@ -1,0 +1,27 @@
+{
+	"name": "DF_SCD_TYPE1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_SRC_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "srcoltp"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "rename"
+				},
+				{
+					"name": "createsrchash"
+				}
+			],
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> srcoltp\nsrcoltp select(mapColumn(\n\t\tsrc_id = id,\n\t\tsrc_name = name,\n\t\tsrc_age = age,\n\t\tsrc_address = address,\n\t\tsrc_phone = phone\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> rename\nrename derive(src_dwhash = sha2(256,src_age+src_phone)) ~> createsrchash"
+		}
+	}
+}
