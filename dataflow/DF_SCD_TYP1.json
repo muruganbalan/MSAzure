@@ -19,33 +19,9 @@
 					"name": "olaptgt"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "DS_ASQL_TGT_CUSTOMER",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				}
-			],
-			"transformations": [
-				{
-					"name": "createHash"
-				},
-				{
-					"name": "existsInOlap"
-				},
-				{
-					"name": "lkpOlap"
-				},
-				{
-					"name": "addAuditColumns"
-				},
-				{
-					"name": "alterrow"
-				}
-			],
-			"script": "source(output(\n\t\tsrc_id as integer,\n\t\tsrc_name as string,\n\t\tsrc_age as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select id as src_id,name as src_name,age as src_age from SalesLT.Customer_Input',\n\tformat: 'query',\n\tdateFormats: ['dd/MM/yyyy'],\n\ttimestampFormats: ['MM/dd/yyyy HH:mm:ss'],\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt\noltpsrc derive(DWHash = ERROR_FUNCTION('')) ~> createHash\ncreateHash, olaptgt exists(createHash@DWHash == olaptgt@DWHash,\n\tnegate:false,\n\tbroadcast: 'none')~> existsInOlap\nexistsInOlap, olaptgt lookup(oltpsrc@id == olaptgt@id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'none')~> lkpOlap\nlkpOlap derive(Inserted = iif(isNull({_Inserted}),currentTimestamp(),{_Inserted}),\n\t\tUpdated = iif(isNull({_LastUpdated}),currentTimestamp(),{_LastUpdated})) ~> addAuditColumns\naddAuditColumns alterRow(updateIf(true())) ~> alterrow\nalterrow sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['id'],\n\tformat: 'table',\n\tmapColumn(\n\t\tid = oltpsrc@id,\n\t\tname = oltpsrc@name,\n\t\tage = oltpsrc@age,\n\t\taddress = oltpsrc@address,\n\t\tphone = oltpsrc@phone,\n\t\t{_Inserted},\n\t\t{_LastUpdated},\n\t\tDWHash = createHash@DWHash\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"sinks": [],
+			"transformations": [],
+			"script": "source(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tdateFormats: ['dd/MM/yyyy'],\n\ttimestampFormats: ['MM/dd/yyyy HH:mm:ss'],\n\tpreferredIntegralType: 'integer',\n\tpreferredFractionalType: 'decimal') ~> oltpsrc\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> olaptgt"
 		}
 	}
 }
