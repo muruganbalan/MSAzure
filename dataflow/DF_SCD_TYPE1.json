@@ -19,7 +19,15 @@
 					"name": "lkpsrcolap"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_TGT_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "tgtolapinsert"
+				}
+			],
 			"transformations": [
 				{
 					"name": "rename"
@@ -35,9 +43,12 @@
 				},
 				{
 					"name": "newvsold"
+				},
+				{
+					"name": "auditcolumns"
 				}
 			],
-			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> srcoltp\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> lkpsrcolap\nsrcoltp select(mapColumn(\n\t\tsrc_id = id,\n\t\tsrc_name = name,\n\t\tsrc_age = age,\n\t\tsrc_address = address,\n\t\tsrc_phone = phone\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> rename\nrename derive(src_dwhash = sha2(256,src_age+src_phone)) ~> createsrchash\ncreatesrchash, lkpsrcolap lookup(src_id == id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'none')~> lkptgtolap\nlkptgtolap select(mapColumn(\n\t\tsrc_id,\n\t\tsrc_name,\n\t\tsrc_age,\n\t\tsrc_address,\n\t\tsrc_phone,\n\t\tsrc_dwhash,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectrequired\nselectrequired split(iif(isNull(id),true(),false()),\n\tdisjoint: false) ~> newvsold@(newrecords, oldrecords)"
+			"script": "source(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> srcoltp\nsource(output(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> lkpsrcolap\nsrcoltp select(mapColumn(\n\t\tsrc_id = id,\n\t\tsrc_name = name,\n\t\tsrc_age = age,\n\t\tsrc_address = address,\n\t\tsrc_phone = phone\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> rename\nrename derive(src_dwhash = sha2(256,src_age+src_phone)) ~> createsrchash\ncreatesrchash, lkpsrcolap lookup(src_id == id,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'none')~> lkptgtolap\nlkptgtolap select(mapColumn(\n\t\tsrc_id,\n\t\tsrc_name,\n\t\tsrc_age,\n\t\tsrc_address,\n\t\tsrc_phone,\n\t\tsrc_dwhash,\n\t\tid\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectrequired\nselectrequired split(iif(isNull(id),true(),false()),\n\tdisjoint: false) ~> newvsold@(newrecords, oldrecords)\nnewvsold@newrecords derive(src_inserted = currentTimestamp(),\n\t\tsrc_updated = currentTimestamp()) ~> auditcolumns\nauditcolumns sink(input(\n\t\tid as integer,\n\t\tname as string,\n\t\tage as integer,\n\t\taddress as string,\n\t\tphone as integer,\n\t\t{_Inserted} as timestamp,\n\t\t{_LastUpdated} as timestamp,\n\t\tDWHash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tid = src_id,\n\t\tname = src_name,\n\t\tage = src_age,\n\t\taddress = src_address,\n\t\tphone = src_phone,\n\t\t{_Inserted} = src_inserted,\n\t\t{_LastUpdated} = src_updated,\n\t\tDWHash = src_dwhash\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> tgtolapinsert"
 		}
 	}
 }
