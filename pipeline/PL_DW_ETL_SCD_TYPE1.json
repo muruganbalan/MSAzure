@@ -19,6 +19,10 @@
 					"dataflow": {
 						"referenceName": "DF_SCD_TYP1",
 						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					}
 				}
 			}
