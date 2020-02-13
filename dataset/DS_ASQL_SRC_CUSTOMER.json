@@ -9,67 +9,27 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "CustomerID",
+				"name": "id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "NameStyle",
-				"type": "bit"
-			},
-			{
-				"name": "Title",
-				"type": "nvarchar"
-			},
-			{
-				"name": "FirstName",
-				"type": "nvarchar"
-			},
-			{
-				"name": "MiddleName",
-				"type": "nvarchar"
-			},
-			{
-				"name": "LastName",
-				"type": "nvarchar"
-			},
-			{
-				"name": "Suffix",
-				"type": "nvarchar"
-			},
-			{
-				"name": "CompanyName",
-				"type": "nvarchar"
-			},
-			{
-				"name": "SalesPerson",
-				"type": "nvarchar"
-			},
-			{
-				"name": "EmailAddress",
-				"type": "nvarchar"
-			},
-			{
-				"name": "Phone",
-				"type": "nvarchar"
-			},
-			{
-				"name": "PasswordHash",
+				"name": "name",
 				"type": "varchar"
 			},
 			{
-				"name": "PasswordSalt",
+				"name": "age",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "address",
 				"type": "varchar"
 			},
 			{
-				"name": "rowguid",
-				"type": "uniqueidentifier"
-			},
-			{
-				"name": "ModifiedDate",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
+				"name": "phone",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {
